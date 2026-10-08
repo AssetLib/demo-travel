@@ -7,7 +7,7 @@ import { colors, type } from '../components/Lab';
 const placements = [
   { key: 'travel.coast', name: 'The quiet coast', screen: 'Travel', ratio: '4:3' },
   { key: 'travel.ridge', name: 'A path through the pines', screen: 'Travel', ratio: '4:3' },
-  { key: 'tasks.garden', name: 'Growing plant', screen: 'Tasks', ratio: '3:2' },
+  { key: 'tasks.garden', name: 'Growing plant · 4 stages', screen: 'Tasks', ratio: '3:2' },
 ] as const;
 
 function safeConsoleUrl(value: string | undefined): string | null {
@@ -70,6 +70,7 @@ export default function ConnectScreen() {
         <Text style={styles.stepTitle}>Publish a different image</Text>
         <Text style={styles.body}>In the console, upload artwork, bind it to one of these placements, and publish a release. Return here and check for updates, then open its sample screen.</Text>
         <Text style={styles.hint}>The app downloads an image when its screen needs it. A published release and the displayed image are separate checks.</Text>
+        <Text style={styles.hint}>The task plant uses empty, started, growing, and complete artwork. The app chooses a stage from task progress; publish all four together to update the plant.</Text>
       </View></View>
 
       <View style={styles.placements}>
@@ -80,6 +81,12 @@ export default function ConnectScreen() {
           <Text style={styles.source} accessibilityLiveRegion="polite">{sourceLabel(assets[placement.key], !!config)}{assets[placement.key]?.sequence ? ` · Release ${assets[placement.key].sequence}` : ''}</Text>
           {assets[placement.key]?.source === 'bundle' && <Text style={styles.hint}>{assets[placement.key].message}</Text>}
         </View>)}
+      </View>
+
+      <View style={styles.placements}>
+        <Text style={styles.sectionLabel}>TRAVEL COLLECTION</Text>
+        <Text style={styles.body}>Published catalog artwork appears after the two sample places. More pages load as you scroll, and an image downloads when its card is visible.</Text>
+        <Text style={styles.hint}>Images kept for this session. The collection uses one bundled placeholder and memory caching, so it does not store the full feed for offline use. Your app’s backend owns destination names and details.</Text>
       </View>
 
       {actionArea === 'refresh' && feedback}

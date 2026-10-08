@@ -1,11 +1,12 @@
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { parsePublicConfig, type AssetlibConfig, type AssetStatus, type ClientStatus } from '@assetlib/sdk-core';
-import { AssetlibImage, createExpoAssetClient, type AssetlibImageProps } from '@assetlib/sdk-expo';
+import { AssetlibImage, AssetlibStateImage, createExpoAssetClient, type AssetlibImageProps } from '@assetlib/sdk-expo';
 import { Image as BundledImage } from 'expo-image';
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 
 const STORAGE_KEY = '@assetlib/mobile-lab/public-config/v1';
+const ALLOW_LOOPBACK = process.env.EXPO_PUBLIC_ASSETLIB_ALLOW_LOOPBACK === 'true';
 const CONFIG_FIELDS = new Set(['schemaVersion', 'orgId', 'appId', 'environment', 'manifestUrl', 'pinnedPublicKey', 'keyId']);
 type Client = ReturnType<typeof createExpoAssetClient>;
 type Connection = {
@@ -33,7 +34,7 @@ export function readPublicConfig(text: string): AssetlibConfig {
   try { input = JSON.parse(text); } catch { throw new Error('This is not valid JSON. Copy the complete public SDK config.'); }
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Use the public SDK config object from Assetlib.');
   if (Object.keys(input).some(key => !CONFIG_FIELDS.has(key))) throw new Error('Only public SDK config is accepted. Do not include passwords, private keys, or admin tokens.');
-  return parsePublicConfig(input);
+  return parsePublicConfig(input, { allowInsecureLoopback: ALLOW_LOOPBACK });
 }
 
 function messageFor(error: unknown): string {
@@ -55,7 +56,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
 
   const activate = useCallback(async (nextConfig: AssetlibConfig, persist: boolean) => {
     const currentOperation = ++operation.current;
-    const nextClient = createExpoAssetClient(nextConfig, { allowVector: Platform.OS === 'web' });
+    const nextClient = createExpoAssetClient(nextConfig, { allowVector: Platform.OS === 'web', allowInsecureLoopback: ALLOW_LOOPBACK });
     clientRef.current = nextClient;
     setClient(nextClient);
     setConfig(nextConfig);
@@ -166,6 +167,13 @@ export function ManagedArtwork({ asset, fallback, ...props }: Omit<AssetlibImage
   const onStatus = useCallback((next: AssetStatus) => { if (client) reportAsset(asset.key, next, client); }, [asset.key, client, reportAsset]);
   if (!client) return <BundledImage {...props} source={fallback} />;
   return <AssetlibImage {...props} client={client} asset={asset} fallback={fallback} revision={revision} onStatus={onStatus} />;
+}
+
+export function ManagedStateArtwork({ asset, state, fallbacks, ...props }: Omit<ComponentProps<typeof AssetlibStateImage>, 'client' | 'revision' | 'onStatus'>) {
+  const { client, revision, reportAsset } = useAssetConnection();
+  const onStatus = useCallback((next: AssetStatus) => { if (client) reportAsset(asset.key, next, client); }, [asset.key, client, reportAsset]);
+  if (!client) return <BundledImage {...props} source={fallbacks[state]} />;
+  return <AssetlibStateImage {...props} client={client} asset={asset} state={state} fallbacks={fallbacks} revision={revision} onStatus={onStatus} />;
 }
 
 export function sourceLabel(status: AssetStatus | undefined, connected: boolean): string {

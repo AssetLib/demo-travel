@@ -17,7 +17,13 @@ export const AppAssets = {
     "garden": {
       "key": "tasks.garden",
       "width": 600,
-      "height": 400
+      "height": 400,
+      "states": [
+        "empty",
+        "started",
+        "growing",
+        "complete"
+      ]
     }
   }
 } as const;

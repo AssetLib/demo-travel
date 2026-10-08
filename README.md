@@ -73,3 +73,13 @@ Current compatible Expo dependencies have unresolved advisories, including a rou
 ## License
 
 Original code and illustrations are MIT licensed; see [LICENSE](LICENSE). Upstream template and font notices remain in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), `LICENSE.expo-template`, and `notices/`.
+
+## Component states and a paged collection
+
+The task card selects one of four garden stages from completed / total tasks. Undoing a task or adding a task recomputes the stage. Four original bundled images keep the progression usable before connection and offline; a connected `tasks.garden` state set replaces the complete family from one release. Its catalog declares `empty`, `started`, `growing`, and `complete`. A legacy release without that state set retains the bundled family.
+
+The Travel screen keeps its two sample places, then requests published catalog metadata in pages of 12. `FlatList` mounts a remote image only for a visible collection card, with one shared placeholder and `cachePolicy="memory"`. Pagination pins the first page’s release sequence. Disconnect, refresh, and unmount abort stale page requests. Saving a card saves its identity for this app session; it does not download the collection for offline use. Actual destination names and details belong to the host application; this demo displays published asset names.
+
+Generate the new original SVG/PNG fixtures with `node scripts/generate-progress-assets.mjs`; this leaves the older audit fixtures unchanged.
+
+For a local console at `http://127.0.0.1:3100`, use `EXPO_PUBLIC_ASSETLIB_ALLOW_LOOPBACK=true npm run export:web` and serve that local export. This explicit build flag permits HTTP only on loopback; normal builds keep HTTPS validation. Do not enable it for a hosted release. Paste the local console’s public SDK config through the connection screen.
