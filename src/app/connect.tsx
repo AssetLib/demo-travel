@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
@@ -23,6 +24,7 @@ function safeConsoleUrl(value: string | undefined): string | null {
 
 export default function ConnectScreen() {
   const { config, status, assets, busy, hydrating, error, notice, connect, disconnect, refresh } = useAssetConnection();
+  const router = useRouter();
   const [draft, setDraft] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [actionArea, setActionArea] = useState<'config' | 'refresh'>('config');
@@ -41,6 +43,7 @@ export default function ConnectScreen() {
   </>;
   return <KeyboardAvoidingView style={styles.page} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.page} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Back to the app" onPress={() => router.navigate('/')} style={({ pressed }) => [styles.back, pressed && styles.disabled]}><Feather name="chevron-left" size={18} color={colors.ink} /><Text style={styles.backText}>Back</Text></Pressable>
       <Text style={styles.eyebrow}>ASSETLIB CONNECTION</Text>
       <Text style={styles.title}>Your app.{ '\n' }Your artwork.</Text>
       <Text style={styles.lead}>The samples already have their images. Connect an app to receive verified artwork from your own Assetlib workspace.</Text>
@@ -101,7 +104,8 @@ export default function ConnectScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1 }, content: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 32 },
+  page: { flex: 1 }, content: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 32 },
+  back: { flexDirection: 'row', alignItems: 'center', gap: 2, alignSelf: 'flex-start', minHeight: 44, marginLeft: -6, marginBottom: 10 }, backText: { fontFamily: type.medium, fontSize: 14, color: colors.ink },
   eyebrow: { fontFamily: type.bold, color: '#7d633e', fontSize: 10, letterSpacing: 1.5, marginBottom: 14 },
   title: { fontFamily: type.display, fontSize: 45, lineHeight: 49, letterSpacing: -1.8, color: colors.ink },
   lead: { fontFamily: type.regular, fontSize: 15, lineHeight: 23, color: '#5e6958', marginTop: 18, marginBottom: 24 },

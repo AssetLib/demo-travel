@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { type, useDemo } from '../components/Lab';
+import { AppBar, PageHeader, Segmented, StatusPill, daylight as theme, type, useDemo } from '../components/Lab';
 import { Garden } from '../assetlib/Garden';
 
 type Filter = 'all' | 'open' | 'done';
@@ -11,37 +11,60 @@ export default function TasksScreen() {
   const [draft, setDraft] = useState('');
   const [message, setMessage] = useState('');
   const done = tasks.filter(task => task.done).length;
+  const percent = tasks.length ? Math.round(done / tasks.length * 100) : 0;
   const visible = tasks.filter(task => filter === 'all' || (filter === 'done' ? task.done : !task.done));
+  const today = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
   const submit = () => {
     if (addTask(draft)) { setDraft(''); setFilter('all'); setMessage('Added to your list.'); }
     else setMessage(tasks.length >= 100 ? 'This sample holds up to 100 tasks.' : 'Write a little task first.');
   };
   return <KeyboardAvoidingView style={styles.page} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView style={styles.page} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-      <View style={styles.brandRow}><Text style={styles.brand}>daylight<Text style={styles.dot}>.</Text></Text></View>
-      <View style={styles.intro}><Text style={styles.title}>Make room{ '\n' }for the good.</Text><Text style={styles.subtitle}>A small list. A little more headspace.</Text></View>
-      <View style={styles.progressCard}>
-        <View style={styles.progressCopy}><Text style={styles.progressTitle}>{tasks.length > 0 && done === tasks.length ? 'Look at you go.' : 'Small steps count.'}</Text><Text style={styles.progressSubtitle} accessibilityLiveRegion="polite">{done} of {tasks.length} done today</Text><View style={styles.track}><View style={[styles.progressFill, { width: `${tasks.length ? done / tasks.length * 100 : 0}%` }]} /></View></View>
-        <Garden done={done} total={tasks.length} style={styles.garden} />
+      <AppBar brand={<Text style={styles.brand}>daylight<Text style={styles.dot}>.</Text></Text>}><StatusPill theme={theme} /></AppBar>
+      <PageHeader theme={theme} title={'Make room\nfor the good.'} description={today} />
+      <View style={styles.gardenCard}>
+        <View style={styles.gardenArt}><Garden done={done} total={tasks.length} style={styles.gardenImage} /></View>
+        <View style={styles.caption}>
+          <View style={styles.captionText}>
+            <Text style={styles.captionLabel}>{tasks.length > 0 && done === tasks.length ? 'Look at you go.' : 'Small steps count.'}</Text>
+            <Text style={styles.captionValue} accessibilityLiveRegion="polite">{done} of {tasks.length} done today</Text>
+          </View>
+          <View style={styles.badge}><Text style={styles.badgeText}>{percent}%</Text></View>
+        </View>
+        <View style={styles.trackWrap}><View style={styles.track}><View style={[styles.progressFill, { width: `${percent}%` }]} /></View></View>
       </View>
-      <View style={styles.listHeading}><Text style={styles.listTitle}>Today’s little list</Text><Text style={styles.listCount}>{tasks.length - done} left</Text></View>
-      <View style={styles.filters}>{(['all', 'open', 'done'] as const).map(value => <Pressable key={value} accessibilityRole="button" accessibilityLabel={`${value === 'all' ? 'All' : value === 'open' ? 'Open' : 'Done'} tasks`} accessibilityState={{ selected: filter === value }} aria-pressed={filter === value} onPress={() => { setFilter(value); setMessage(''); }} style={[styles.filter, filter === value && styles.filterSelected]}><Text style={[styles.filterText, filter === value && styles.filterTextSelected]}>{value === 'all' ? 'All' : value === 'open' ? 'To do' : 'Done'}</Text></Pressable>)}</View>
+      <View style={styles.listHeading}><Text style={styles.listTitle}>Today’s list</Text><Text style={styles.listCount}>{tasks.length - done} left</Text></View>
+      <Segmented theme={theme} value={filter} onChange={value => { setFilter(value); setMessage(''); }} options={[{ value: 'all', label: 'All' }, { value: 'open', label: 'To do' }, { value: 'done', label: 'Done' }]} />
       <View style={styles.taskList}>{visible.map(task => <Pressable key={task.id} accessibilityRole="checkbox" accessibilityLabel={task.title} accessibilityState={{ checked: task.done }} aria-checked={task.done} onPress={() => { toggleTask(task.id); setMessage(''); }} style={({ pressed }) => [styles.task, pressed && styles.taskPressed]}>
-        <View style={[styles.checkbox, task.done && styles.checked]}>{task.done && <Feather name="check" size={15} color="#fff" />}</View><View style={styles.taskCopy}><Text style={[styles.taskTitle, task.done && styles.taskTitleDone]}>{task.title}</Text><Text style={styles.taskCategory}>{task.category}</Text></View>
+        <View style={[styles.checkbox, task.done && styles.checked]}>{task.done && <Feather name="check" size={14} color={theme.onFill} />}</View>
+        <View style={styles.taskCopy}><Text style={[styles.taskTitle, task.done && styles.taskTitleDone]}>{task.title}</Text><Text style={styles.taskCategory}>{task.category}</Text></View>
       </Pressable>)}</View>
-      {visible.length === 0 && <View style={styles.empty}><Text style={styles.emptyTitle}>{filter === 'done' ? 'Good things take a moment.' : 'A little room to breathe.'}</Text><Text style={styles.emptyBody}>{filter === 'done' ? 'Check off a task and it will appear here.' : 'Everything on your list is done. Enjoy it.'}</Text></View>}
-      <View style={styles.inputGroup}><Text style={styles.inputLabel}>Add a task</Text><View style={styles.inputRow}><TextInput accessibilityLabel="New task" placeholder="Write it down…" placeholderTextColor="#858c82" value={draft} onChangeText={value => { setDraft(value); setMessage(''); }} onSubmitEditing={submit} returnKeyType="done" maxLength={100} style={styles.input} /><Pressable accessibilityRole="button" accessibilityLabel="Add task" onPress={submit} style={styles.addButton}><Feather name="plus" size={22} color="#fff" /></Pressable></View><Text accessibilityLiveRegion="polite" style={styles.message}>{message || 'Just for you. This list stays in this session.'}</Text></View>
+      {visible.length === 0 && <View style={styles.empty}><Text style={styles.emptyTitle}>{filter === 'done' ? 'Nothing done yet.' : 'All clear.'}</Text><Text style={styles.emptyBody}>{filter === 'done' ? 'Check off a task and it will appear here.' : 'Everything on your list is done. Enjoy it.'}</Text></View>}
+      <View style={styles.inputRow}>
+        <TextInput accessibilityLabel="New task" placeholder="Add a task" placeholderTextColor={theme.muted} value={draft} onChangeText={value => { setDraft(value); setMessage(''); }} onSubmitEditing={submit} returnKeyType="done" maxLength={100} style={styles.input} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Add task" onPress={submit} style={({ pressed }) => [styles.addButton, pressed && styles.taskPressed]}><Feather name="plus" size={20} color={theme.onFill} /></Pressable>
+      </View>
+      <Text accessibilityLiveRegion="polite" style={styles.message}>{message}</Text>
     </ScrollView>
   </KeyboardAvoidingView>;
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1 }, content: { paddingHorizontal: 24, paddingTop: 26, paddingBottom: 28 },
-  brandRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 }, brand: { fontFamily: type.bold, fontSize: 26, letterSpacing: -1.2, color: '#244a3d' }, dot: { color: '#b98f3d' }, 
-  intro: { paddingTop: 28, paddingBottom: 24 }, title: { fontFamily: type.display, fontSize: 46, lineHeight: 51, letterSpacing: -1.7, color: '#284d3e' }, subtitle: { fontFamily: type.regular, color: '#677162', fontSize: 14, lineHeight: 22, marginTop: 14 },
-  progressCard: { flexDirection: 'row', padding: 20, paddingRight: 8, borderRadius: 9, backgroundColor: '#edf0e8', alignItems: 'center', minHeight: 136, overflow: 'hidden' }, progressCopy: { flex: 1, minWidth: 130 }, progressTitle: { fontFamily: type.bold, fontSize: 15, color: '#35533f' }, progressSubtitle: { fontFamily: type.regular, color: '#5c6b53', fontSize: 12, marginTop: 6 }, track: { height: 5, backgroundColor: '#d7decc', borderRadius: 4, marginTop: 18, overflow: 'hidden' }, progressFill: { height: 5, backgroundColor: '#65865a', borderRadius: 4 }, garden: { width: '42%', height: 124 },
-  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 33, gap: 8 }, listTitle: { fontFamily: type.display, fontSize: 24, letterSpacing: -0.7, color: '#2d4b3b' }, listCount: { fontFamily: type.regular, fontSize: 12, color: '#69755e' }, filters: { flexDirection: 'row', gap: 6, marginTop: 16, marginBottom: 6 }, filter: { minHeight: 44, minWidth: 64, paddingHorizontal: 17, alignItems: 'center', justifyContent: 'center', borderRadius: 22, borderWidth: 1, borderColor: '#dde3d4' }, filterSelected: { backgroundColor: '#e7eddf', borderColor: '#e7eddf' }, filterText: { fontFamily: type.medium, fontSize: 13, color: '#6b7863' }, filterTextSelected: { color: '#365b3e' },
-  taskList: { marginTop: 5 }, task: { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 88, borderBottomWidth: 1, borderBottomColor: '#e4e7dc', paddingVertical: 18 }, taskPressed: { opacity: 0.65 }, checkbox: { width: 25, height: 25, borderRadius: 8, borderColor: '#b9c3ad', borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' }, checked: { backgroundColor: '#56734a', borderColor: '#56734a' },  taskCopy: { flex: 1 }, taskTitle: { fontFamily: type.medium, color: '#354c3a', fontSize: 14, lineHeight: 21 }, taskTitleDone: { color: '#798572', textDecorationLine: 'line-through' }, taskCategory: { fontFamily: type.regular, fontSize: 12, color: '#788269', marginTop: 4 },
-  empty: { paddingVertical: 32, gap: 9 }, emptyTitle: { fontFamily: type.display, fontSize: 22, color: '#38563f' }, emptyBody: { fontFamily: type.regular, fontSize: 14, lineHeight: 22, color: '#6c7762' },
-  inputGroup: { marginTop: 26 }, inputLabel: { fontFamily: type.medium, fontSize: 13, color: '#35533f', marginBottom: 10 }, inputRow: { flexDirection: 'row', borderWidth: 1, borderColor: '#d7dfcc', borderRadius: 10, padding: 5, backgroundColor: '#fff', alignItems: 'center' }, input: { flex: 1, minWidth: 0, minHeight: 46, paddingHorizontal: 12, fontFamily: type.regular, color: '#35533f', fontSize: 14 }, addButton: { width: 46, height: 46, borderRadius: 7, backgroundColor: '#31573f', alignItems: 'center', justifyContent: 'center' },  message: { minHeight: 34, fontFamily: type.regular, color: '#6a7760', fontSize: 11, lineHeight: 17, paddingTop: 9 },
+  page: { flex: 1 }, content: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 32 },
+  brand: { fontFamily: type.bold, fontSize: 24, letterSpacing: -1, color: theme.ink }, dot: { color: theme.accent },
+  gardenCard: { backgroundColor: theme.surface, borderRadius: 20, borderWidth: 1, borderColor: theme.line, overflow: 'hidden' },
+  gardenArt: { width: '100%', aspectRatio: 3 / 2, backgroundColor: '#e8eee1' }, gardenImage: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
+  caption: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 14, paddingHorizontal: 16, backgroundColor: theme.caption },
+  captionText: { flex: 1, minWidth: 0 }, captionLabel: { fontFamily: type.medium, fontSize: 11, color: theme.accent }, captionValue: { fontFamily: type.display, fontSize: 20, letterSpacing: -0.4, color: theme.ink, marginTop: 3 },
+  badge: { minWidth: 44, height: 32, paddingHorizontal: 10, borderRadius: 16, backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.line, alignItems: 'center', justifyContent: 'center' }, badgeText: { fontFamily: type.medium, fontSize: 12, color: theme.ink },
+  trackWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, backgroundColor: theme.caption }, track: { height: 4, backgroundColor: '#d3dcc9', borderRadius: 2, overflow: 'hidden' }, progressFill: { height: 4, backgroundColor: theme.fill, borderRadius: 2 },
+  listHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 28, marginBottom: 12, gap: 8 }, listTitle: { fontFamily: type.bold, fontSize: 15, color: theme.ink }, listCount: { fontFamily: type.regular, fontSize: 12, color: theme.muted },
+  taskList: { marginTop: 8 }, task: { flexDirection: 'row', alignItems: 'center', gap: 14, minHeight: 64, borderBottomWidth: 1, borderBottomColor: theme.line, paddingVertical: 12 }, taskPressed: { opacity: 0.7 },
+  checkbox: { width: 24, height: 24, borderRadius: 8, borderColor: '#b9c3ad', borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' }, checked: { backgroundColor: theme.fill, borderColor: theme.fill },
+  taskCopy: { flex: 1 }, taskTitle: { fontFamily: type.medium, color: theme.ink, fontSize: 14, lineHeight: 20 }, taskTitleDone: { color: theme.muted, textDecorationLine: 'line-through' }, taskCategory: { fontFamily: type.regular, fontSize: 12, color: theme.muted, marginTop: 3 },
+  empty: { paddingVertical: 28, gap: 6 }, emptyTitle: { fontFamily: type.display, fontSize: 20, color: theme.ink }, emptyBody: { fontFamily: type.regular, fontSize: 14, lineHeight: 22, color: theme.muted },
+  inputRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 20, padding: 5, borderWidth: 1, borderColor: theme.line, borderRadius: 14, backgroundColor: theme.surface },
+  input: { flex: 1, minWidth: 0, minHeight: 40, paddingHorizontal: 12, fontFamily: type.regular, color: theme.ink, fontSize: 14 },
+  addButton: { width: 40, height: 40, borderRadius: 10, backgroundColor: theme.fill, alignItems: 'center', justifyContent: 'center' },
+  message: { minHeight: 20, fontFamily: type.regular, color: theme.muted, fontSize: 12, lineHeight: 18, paddingTop: 8 },
 });
