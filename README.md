@@ -1,5 +1,7 @@
 # Roam — Assetlib travel demo
 
+[Open the hosted travel demo](https://assetlib-travel.vercel.app) · [Create an Assetlib account](https://assetlib-console.vercel.app)
+
 An original Expo app with the real [Assetlib SDK](https://github.com/AssetLib/sdk-js) already connected to three typed image placements. Save fictional travel ideas and open simple itineraries. Bundled artwork keeps the app usable before you connect an account and whenever remote artwork is unavailable.
 
 This is **preview software**. The browser path is the first supported verification target. Native iOS and Android builds have not been verified; neither app-store readiness nor a clean dependency audit is claimed. Read [DEPENDENCY-REVIEW.md](DEPENDENCY-REVIEW.md) before adopting the sample.
@@ -62,7 +64,9 @@ The destinations are fictional, and this sample has no booking, synchronized tas
 
 ## Validation and limitations
 
-Verified on 2026-10-07: fresh `npm ci` from the published SDK release artifacts, code generation, typecheck, lint, web export, and Expo dependency compatibility. Across both exported demos, 39 browser checks passed against the real hosted signed release: remote image rendering, correct travel aspect ratios, public-config persistence, verified-cache status after reload, disconnect to bundled images, responsive layouts at 320/390/1440px, and zero page errors. Cache-hit checks are not a network-off test. The included CI repeats the build checks and rejects stale generated references. Native builds and publish/rollback from the public demo remain separate acceptance steps; native support in the adapter is not a substitute for a device or simulator test.
+Verified on 2026-10-07: fresh `npm ci` from the published SDK release artifacts, code generation, typecheck, lint, web export, and Expo dependency compatibility. Across both exported demos, 39 browser checks passed against the real hosted signed release: remote image rendering, correct travel aspect ratios, public-config persistence, verified-cache status after reload, disconnect to bundled images, responsive layouts at 320/390/1440px, and zero page errors. Cache-hit checks are not a network-off test. The included CI repeats the build checks and rejects stale generated references. Native builds remain unverified; native support in the adapter is not a substitute for a device or simulator test.
+
+The hosted travel demo also passed live publish/refresh/rollback acceptance in Chrome. On the same running page, sequence 1 showed the original coast, sequence 2 replaced `travel.coast` with the Alpine weekend artwork, and rollback published sequence 3 and restored the coast. Each change was visibly confirmed after **Check for updates**, without rebuilding the demo. The deployed build uses Node 22. [CI run 37711586159](https://github.com/AssetLib/demo-travel/actions/runs/37711586159) passed for commit `d661ddc927e1395b736b0188a163133e9fe8845e`.
 
 Current compatible Expo dependencies have unresolved advisories, including a router URL-decoding availability concern. No unsupported framework downgrade or speculative major dependency override was applied. See [DEPENDENCY-REVIEW.md](DEPENDENCY-REVIEW.md) for affected chains and primary advisory links. Keep the development server local; use the static export for a public preview.
 
