@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { parsePublicConfig, type AssetlibConfig, type AssetStatus, type ClientStatus } from '@assetlib/sdk-core';
 import { AssetlibImage, createExpoAssetClient, type AssetlibImageProps } from '@assetlib/sdk-expo';
@@ -54,7 +55,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
 
   const activate = useCallback(async (nextConfig: AssetlibConfig, persist: boolean) => {
     const currentOperation = ++operation.current;
-    const nextClient = createExpoAssetClient(nextConfig);
+    const nextClient = createExpoAssetClient(nextConfig, { allowVector: Platform.OS === 'web' });
     clientRef.current = nextClient;
     setClient(nextClient);
     setConfig(nextConfig);

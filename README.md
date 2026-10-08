@@ -23,7 +23,7 @@ Open `http://127.0.0.1:4176`. If occupied, use `ASSETLIB_PREVIEW_PORT=4186 npm r
 
 The default route is Travel, encoded in source and app configuration, so no environment file is required. Both screens remain available to demonstrate one app receiving different placements. Optional public settings are in `.env.example`; copy it to `.env.local` to override the console URL or default view, then restart Expo or rebuild the export. Never put account credentials or private keys in public environment variables.
 
-Both SDK packages install from exact versioned GitHub release tarballs for **0.1.0-preview.1**. The lockfile records their integrity. No sibling checkout, private registry, or local SDK source is required. `npm run assets:codegen` invokes the installed package's CLI and reads the checked-in catalog offline.
+Both SDK packages install from exact versioned GitHub release tarballs for **0.2.0-preview.1**. The lockfile records their integrity. No sibling checkout, private registry, or local SDK source is required. `npm run assets:codegen` invokes the installed package's CLI and reads the checked-in catalog offline.
 
 ## Connect your account
 
@@ -46,7 +46,7 @@ Account credentials stay in the console. The demo accepts only public identifier
 
 `assetlib.catalog.json` generates `src/assets.generated.ts`. Components use generated properties rather than repeating placement strings. This preview checks placement identity and shape; it does not claim a separately versioned runtime placement contract.
 
-`src/assetlib/Connection.tsx` creates the real SDK client and renders `AssetlibImage`, using Expo Image for downloaded WebP support. `src/app/connect.tsx` manages setup and refresh. `src/screens/TravelScreen.tsx` and `src/app/tasks.tsx` contain the app screens. Essential navigation and branding remain bundled.
+`src/assetlib/Connection.tsx` creates the real SDK client and renders `AssetlibImage`, using Expo Image for downloaded PNG/WebP support and opting into normalized SVG in the browser. Native uses prepared raster versions. `src/app/connect.tsx` manages setup and refresh. `src/screens/TravelScreen.tsx` and `src/app/tasks.tsx` contain the app screens. Essential navigation and branding remain bundled.
 
 A received manifest is not proof that an image was rendered. Images resolve progressively as their screens need them. Only the configured pinned public key verifies a release; trust the console configuration you paste.
 

@@ -3,8 +3,8 @@
   "version": "0.1.0-preview.1",
   "main": "expo-router/entry",
   "dependencies": {
-    "@assetlib/sdk-core": "https://github.com/AssetLib/sdk-js/releases/download/v0.1.0-preview.1/assetlib-sdk-core-0.1.0-preview.1.tgz",
-    "@assetlib/sdk-expo": "https://github.com/AssetLib/sdk-js/releases/download/v0.1.0-preview.1/assetlib-sdk-expo-0.1.0-preview.1.tgz",
+    "@assetlib/sdk-core": "https://github.com/AssetLib/sdk-js/releases/download/v0.2.0-preview.1/assetlib-sdk-core-0.2.0-preview.1.tgz",
+    "@assetlib/sdk-expo": "https://github.com/AssetLib/sdk-js/releases/download/v0.2.0-preview.1/assetlib-sdk-expo-0.2.0-preview.1.tgz",
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/fraunces": "^0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",
