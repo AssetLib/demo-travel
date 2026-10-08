@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'expo-router';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAssetConnection } from '../assetlib/Connection';
 
@@ -61,7 +62,7 @@ export function LabShell({ children }: { children: ReactNode }) {
       </View>}
       <SafeAreaView style={[styles.app, { backgroundColor: isTasks ? '#fafbf7' : colors.paper }, desktop && { height: Math.min(height - 64, 920), borderRadius: 28, borderWidth: 1, borderColor: '#d8dacd', flex: undefined }]}>
         {children}
-        <Pressable accessibilityRole="button" accessibilityLabel="Open Assetlib connection" onPress={() => router.navigate('/connect')} style={[styles.labFooter, { minHeight: 48 }]}><Text style={styles.labFooterText}>{busy || hydrating ? 'Checking Assetlib…' : error ? 'Check connection · Assetlib ↗' : config ? status?.sequence ? `Release ${status.sequence} · Assetlib connection ↗` : 'Waiting for release · Assetlib ↗' : 'Bundled artwork · Connect Assetlib ↗'}</Text></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Open Assetlib connection" onPress={() => router.navigate('/connect')} style={[styles.labFooter, { minHeight: 48 }]}><Text style={styles.labFooterText}>{busy || hydrating ? 'Checking Assetlib…' : error ? 'Check connection · Assetlib' : config ? status?.sequence ? `Release ${status.sequence} · Assetlib connection` : 'Waiting for release · Assetlib' : 'Bundled artwork · Connect Assetlib'}</Text><Feather name="arrow-up-right" size={13} color="#616d63" /></Pressable>
       </SafeAreaView>
     </View>
   );
@@ -79,6 +80,6 @@ const styles = StyleSheet.create({
   railRule: { width: 40, height: 1, backgroundColor: '#899488', marginTop: 34, marginBottom: 18 },
   railNote: { fontFamily: type.regular, color: '#57645a', fontSize: 13, lineHeight: 20 },
   app: { flex: 1, width: '100%', maxWidth: 540, overflow: 'hidden' },
-  labFooter: { paddingVertical: 10, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#dedfd3' },
+  labFooter: { paddingVertical: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, borderTopWidth: 1, borderTopColor: '#dedfd3' },
   labFooterText: { fontFamily: type.medium, fontSize: 12, color: '#616d63' },
 });

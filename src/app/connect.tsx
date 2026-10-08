@@ -1,6 +1,7 @@
 import * as Linking from 'expo-linking';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
 import { sourceLabel, useAssetConnection } from '../assetlib/Connection';
 import { colors, type } from '../components/Lab';
 
@@ -53,7 +54,7 @@ export default function ConnectScreen() {
       <View style={styles.step}><Text style={styles.stepNumber}>01</Text><View style={styles.stepContent}>
         <Text style={styles.stepTitle}>Create your app in Assetlib</Text>
         <Text style={styles.body}>Create an account in the console, then create a workspace with its demo app. Its three placements match these samples.</Text>
-        {consoleUrl ? <Pressable accessibilityRole="link" accessibilityLabel="Open Assetlib console" onPress={() => void openConsole()} style={styles.outlineButton}><Text style={styles.outlineButtonText}>Open Assetlib console ↗</Text></Pressable> : <Text style={styles.hint}>This build has no console address yet. Set EXPO_PUBLIC_ASSETLIB_CONSOLE_URL when running it, or paste an existing app’s public config below.</Text>}
+        {consoleUrl ? <Pressable accessibilityRole="link" accessibilityLabel="Open Assetlib console" onPress={() => void openConsole()} style={styles.outlineButton}><Text style={styles.outlineButtonText}>Open Assetlib console</Text><Feather name="arrow-up-right" size={15} color="#36513a" /></Pressable> : <Text style={styles.hint}>This build has no console address yet. Set EXPO_PUBLIC_ASSETLIB_CONSOLE_URL when running it, or paste an existing app’s public config below.</Text>}
         {linkError && <Text accessibilityRole="alert" style={styles.error}>{linkError}</Text>}
       </View></View>
 
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   summaryHeading: { flexDirection: 'row', alignItems: 'center', gap: 9 }, dot: { width: 7, height: 7, backgroundColor: '#8d967d', borderRadius: 4 }, connectedDot: { backgroundColor: '#3e7350' },
   summaryTitle: { fontFamily: type.bold, color: '#34513d', fontSize: 14, flex: 1 }, summaryBody: { fontFamily: type.regular, color: '#5c6b52', fontSize: 12, lineHeight: 19, marginTop: 8 }, connectionHost: { fontFamily: type.medium, color: '#4b6048', fontSize: 12, marginTop: 8 },
   step: { flexDirection: 'row', gap: 15, paddingBottom: 27 }, stepNumber: { fontFamily: type.medium, color: '#9b8152', fontSize: 12, paddingTop: 3 }, stepContent: { flex: 1, minWidth: 0 }, stepTitle: { fontFamily: type.bold, fontSize: 16, lineHeight: 23, color: colors.ink, marginBottom: 8 }, body: { fontFamily: type.regular, color: '#5f6959', fontSize: 14, lineHeight: 22 }, hint: { fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#6a745f', marginTop: 8 },
-  outlineButton: { minHeight: 48, borderWidth: 1, borderColor: '#c7ceba', borderRadius: 7, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 12, marginTop: 14 }, outlineButtonText: { fontFamily: type.bold, fontSize: 13, color: '#36513a' },
+  outlineButton: { minHeight: 48, borderWidth: 1, borderColor: '#c7ceba', borderRadius: 7, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingHorizontal: 12, marginTop: 14 }, outlineButtonText: { fontFamily: type.bold, fontSize: 13, color: '#36513a' },
   configInput: { minHeight: 180, maxHeight: 240, borderWidth: 1, borderColor: '#cdd3c2', borderRadius: 8, padding: 13, backgroundColor: '#fffdf7', fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#344936', marginTop: 14 }, primaryButton: { minHeight: 48, paddingHorizontal: 16, borderRadius: 7, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, marginTop: 14 }, primaryButtonText: { fontFamily: type.bold, color: '#f5f1e7', fontSize: 13 }, disabled: { opacity: 0.5 },
   placements: { borderTopWidth: 1, borderTopColor: '#d8dccb', paddingTop: 22 }, sectionLabel: { fontFamily: type.bold, color: '#6b775f', fontSize: 10, letterSpacing: 1.1, marginBottom: 6 }, placement: { paddingVertical: 17, borderBottomWidth: 1, borderBottomColor: '#dfe2d4' }, placementTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }, placementName: { fontFamily: type.medium, fontSize: 14, color: colors.ink, flex: 1 }, ratio: { fontFamily: type.medium, fontSize: 11, color: '#7a846e' }, placementKey: { fontFamily: type.regular, fontSize: 11, color: '#79836c', marginTop: 4 }, source: { fontFamily: type.bold, fontSize: 12, lineHeight: 19, color: '#3e6544', marginTop: 9 },
   feedback: { padding: 15, borderLeftWidth: 2, borderLeftColor: '#b9753d', backgroundColor: '#f0e7d7', marginTop: 20 }, error: { fontFamily: type.medium, color: '#8d492e', fontSize: 13, lineHeight: 20 }, notice: { fontFamily: type.regular, color: '#4a6a44', fontSize: 13, lineHeight: 21, marginTop: 20 }, connectionActions: { marginTop: 12 }, disconnectButton: { minHeight: 48, justifyContent: 'center', alignItems: 'center', marginTop: 6 }, disconnectText: { fontFamily: type.medium, color: '#74573a', fontSize: 13 },
