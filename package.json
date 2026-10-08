@@ -1,0 +1,53 @@
+{
+  "name": "assetlib-demo-travel",
+  "version": "0.1.0-preview.1",
+  "main": "expo-router/entry",
+  "dependencies": {
+    "@assetlib/sdk-core": "https://github.com/AssetLib/sdk-js/releases/download/v0.1.0-preview.1/assetlib-sdk-core-0.1.0-preview.1.tgz",
+    "@assetlib/sdk-expo": "https://github.com/AssetLib/sdk-js/releases/download/v0.1.0-preview.1/assetlib-sdk-expo-0.1.0-preview.1.tgz",
+    "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/fraunces": "^0.4.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "~57.0.27",
+    "expo-constants": "~57.0.21",
+    "expo-file-system": "~57.0.7",
+    "expo-font": "~57.0.4",
+    "expo-image": "~57.0.5",
+    "expo-linking": "~57.0.12",
+    "expo-router": "~57.0.25",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "^0.21.2",
+    "react-native-worklets": "0.10.1"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "sharp": "^0.35.5",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings 0",
+    "export:web": "expo export --platform web",
+    "assets:generate": "node scripts/generate-assets.mjs",
+    "preview:web": "python3 scripts/preview.py",
+    "assets:codegen": "assetlib-codegen ./assetlib.catalog.json > ./src/assets.generated.ts",
+    "verify": "npm run assets:codegen && npm run typecheck && npm run lint && npm run export:web"
+  },
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

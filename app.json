@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Roam \u2014 Assetlib demo",
+    "slug": "assetlib-demo-travel",
+    "version": "0.1.0",
+    "scheme": "assetlib-demo-travel",
+    "orientation": "portrait",
+    "icon": "./assets/app-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#283b68",
+        "foregroundImage": "./assets/app-icon.png"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/essential-mark.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-image"
+    ]
+  }
+}
