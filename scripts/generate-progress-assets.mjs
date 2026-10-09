@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 // New original illustrations. All stages share the same pot, canvas, and anchor.
-// The existing audit fixtures and task-garden.png are intentionally untouched.
+// The existing audit fixtures are intentionally untouched.
 const root = fileURLToPath(new URL('../assets/', import.meta.url));
 await mkdir(`${root}/source`, { recursive: true });
 const base = '<path fill="#edf0e8" d="M0 0h600v400H0z"/><ellipse cx="300" cy="347" rx="153" ry="15" fill="#dce2d4"/>';

@@ -48,31 +48,19 @@ const ridge = svg(`
   <path stroke="#395a4e" stroke-width="9" d="M989 506v127"/>
 `);
 
-const garden = svg(`
-  <path fill="#edf0e8" d="M0 0h600v400H0z"/>
-  <ellipse cx="305" cy="345" rx="161" ry="17" fill="#dce2d4"/>
-  <path fill="#dfba73" d="M208 244h178l-25 94H233z"/>
-  <path fill="#ebcf98" d="M197 228h199v28H197z"/>
-  <path stroke="#425e49" stroke-width="9" fill="none" d="M295 235V108m0 89 73-71m-73 57-77-59"/>
-  <path fill="#71916e" d="M290 144c-69-33-36-90-6-105 36 29 43 73 6 105zm-24 30c-71 5-96-40-83-77 51-1 86 22 83 77zm64-4c-7-60 35-83 77-72 4 42-14 73-77 72z"/>
-  <circle cx="147" cy="81" r="15" fill="#e8c97e"/>
-  <path stroke="#b69b61" stroke-width="4" stroke-linecap="round" d="M448 214v24m-12-12h24"/>
-`, '0 0 600 400');
-
 const icon = svg(`
   <rect width="128" height="128" rx="32" fill="#283b68"/>
   <path fill="#eee6ce" d="m26 94 23-60h19L45 94zm31 0 22-60h19L75 94z"/>
   <circle cx="96" cy="91" r="7" fill="#e6b35f"/>
 `, '0 0 128 128');
 
-for (const [name, source] of Object.entries({ coast, ridge, garden, icon })) {
+for (const [name, source] of Object.entries({ coast, ridge, icon })) {
   await writeFile(`${root}/source/${name}.svg`, source);
 }
 
 await sharp(Buffer.from(coast)).resize(4096, 3072).png().toFile(`${root}/coast-hero.png`);
 await copyFile(`${root}/coast-hero.png`, `${root}/coast-hero-copy.png`);
 await sharp(Buffer.from(ridge)).resize(1200, 900).png().toFile(`${root}/ridge-card.png`);
-await sharp(Buffer.from(garden)).resize(600, 400).png().toFile(`${root}/task-garden.png`);
 await sharp(Buffer.from(icon)).resize(64, 64).png().toFile(`${root}/essential-mark.png`);
 await sharp(Buffer.from(icon)).resize(1024, 1024).png().toFile(`${root}/app-icon.png`);
 console.log('Generated original bundled assets, including the documented duplicate and oversize audit fixtures.');
