@@ -12,13 +12,17 @@ const placements = [
   { key: 'tasks.garden', name: 'Growing plant · 4 stages', screen: 'Tasks', ratio: '3:2' },
 ] as const;
 
+const CONSOLE_URL = 'https://console.assetlib.dev';
+// Saved configs may still deliver from the legacy host, but people sign in to the console on CONSOLE_URL.
+const LEGACY_CONSOLE_HOST = 'assetlib-console.vercel.app';
+
 function safeConsoleUrl(value: string | undefined): string | null {
   if (!value) return null;
   try {
     const url = new URL(value);
     if (url.username || url.password || url.search || url.hash) return null;
     if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname))) return null;
-    return url.origin;
+    return url.hostname === LEGACY_CONSOLE_HOST ? CONSOLE_URL : url.origin;
   } catch { return null; }
 }
 
@@ -28,7 +32,7 @@ export default function ConnectScreen() {
   const [draft, setDraft] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [actionArea, setActionArea] = useState<'config' | 'refresh'>('config');
-  const consoleUrl = safeConsoleUrl(process.env.EXPO_PUBLIC_ASSETLIB_CONSOLE_URL ?? 'https://assetlib-console.vercel.app') ?? safeConsoleUrl(config?.manifestUrl ? new URL(config.manifestUrl).origin : undefined);
+  const consoleUrl = safeConsoleUrl(process.env.EXPO_PUBLIC_ASSETLIB_CONSOLE_URL ?? CONSOLE_URL) ?? safeConsoleUrl(config?.manifestUrl ? new URL(config.manifestUrl).origin : undefined);
   const pending = busy || hydrating;
   const configText = draft ?? (config ? JSON.stringify(config, null, 2) : '');
   const openConsole = async () => {
