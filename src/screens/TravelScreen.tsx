@@ -4,7 +4,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { AssetlibDynamicImage } from '@assetlib/sdk-expo';
 import type { DynamicAssetRef } from '@assetlib/sdk-core';
 import { AppBar, PageHeader, Segmented, StatusPill, roam as theme, type, useDemo } from '../components/Lab';
-import { ManagedArtwork, useAssetConnection } from '../assetlib/Connection';
+import { APP_APPEARANCE, ManagedArtwork, useAssetConnection } from '../assetlib/Connection';
 import { usePublishedAssets } from '../assetlib/usePublishedAssets';
 import { AppAssets } from '../assets.generated';
 
@@ -56,7 +56,7 @@ export default function TravelScreen() {
       return <View style={styles.card}>
         <View style={styles.pictureWrap}>
           {client && viewable.has(item.id)
-            ? <AssetlibDynamicImage client={client} asset={item.asset} fallback={placeholder} revision={revision} cachePolicy="memory" style={styles.picture} contentFit="cover" accessibilityLabel={name} />
+            ? <AssetlibDynamicImage client={client} asset={item.asset} fallback={placeholder} appearance={APP_APPEARANCE} revision={revision} cachePolicy="memory" style={styles.picture} contentFit="cover" accessibilityLabel={name} />
             : <Image source={placeholder} style={styles.picture} accessibilityLabel="Artwork placeholder" />}
         </View>
         <View style={styles.caption}>

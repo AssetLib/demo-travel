@@ -3,8 +3,8 @@
   "version": "0.1.0-preview.1",
   "main": "expo-router/entry",
   "dependencies": {
-    "@assetlib/sdk-core": "file:vendor/assetlib-sdk-core-0.3.0-preview.1.tgz",
-    "@assetlib/sdk-expo": "file:vendor/assetlib-sdk-expo-0.3.0-preview.1.tgz",
+    "@assetlib/sdk-core": "file:vendor/assetlib-sdk-core-0.4.0-preview.1.tgz",
+    "@assetlib/sdk-expo": "file:vendor/assetlib-sdk-expo-0.4.0-preview.1.tgz",
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/fraunces": "^0.4.1",
     "@expo/vector-icons": "^15.0.2",

@@ -48,5 +48,5 @@ output/
 .env*
 !.env.example
 
-!vendor/assetlib-sdk-core-0.3.0-preview.1.tgz
-!vendor/assetlib-sdk-expo-0.3.0-preview.1.tgz
+!vendor/assetlib-sdk-core-0.4.0-preview.1.tgz
+!vendor/assetlib-sdk-expo-0.4.0-preview.1.tgz

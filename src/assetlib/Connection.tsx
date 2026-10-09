@@ -7,7 +7,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 
 const STORAGE_KEY = '@assetlib/mobile-lab/public-config/v1';
 const ALLOW_LOOPBACK = process.env.EXPO_PUBLIC_ASSETLIB_ALLOW_LOOPBACK === 'true';
-const CONFIG_FIELDS = new Set(['schemaVersion', 'orgId', 'appId', 'environment', 'manifestUrl', 'pinnedPublicKey', 'keyId']);
+const CONFIG_FIELDS = new Set(['schemaVersion', 'orgId', 'appId', 'environment', 'manifestUrl', 'pinnedPublicKey', 'keyId', 'pinnedPublicKeys', 'keyIds']);
 type Client = ReturnType<typeof createExpoAssetClient>;
 type Connection = {
   config: AssetlibConfig | null;
@@ -162,18 +162,22 @@ export function useAssetConnection() {
   return context;
 }
 
-export function ManagedArtwork({ asset, fallback, ...props }: Omit<AssetlibImageProps, 'client' | 'revision' | 'onStatus'>) {
+// Both sample palettes are light only (app.json sets userInterfaceStyle), so request light
+// artwork instead of the SDK's default of following the system color scheme.
+export const APP_APPEARANCE = 'light';
+
+export function ManagedArtwork({ asset, fallback, appearance = APP_APPEARANCE, ...props }: Omit<AssetlibImageProps, 'client' | 'revision' | 'onStatus'>) {
   const { client, revision, reportAsset } = useAssetConnection();
   const onStatus = useCallback((next: AssetStatus) => { if (client) reportAsset(asset.key, next, client); }, [asset.key, client, reportAsset]);
   if (!client) return <BundledImage {...props} source={fallback} />;
-  return <AssetlibImage {...props} client={client} asset={asset} fallback={fallback} revision={revision} onStatus={onStatus} />;
+  return <AssetlibImage {...props} client={client} asset={asset} fallback={fallback} appearance={appearance} revision={revision} onStatus={onStatus} />;
 }
 
-export function ManagedStateArtwork({ asset, state, fallbacks, ...props }: Omit<ComponentProps<typeof AssetlibStateImage>, 'client' | 'revision' | 'onStatus'>) {
+export function ManagedStateArtwork({ asset, state, fallbacks, appearance = APP_APPEARANCE, ...props }: Omit<ComponentProps<typeof AssetlibStateImage>, 'client' | 'revision' | 'onStatus'>) {
   const { client, revision, reportAsset } = useAssetConnection();
   const onStatus = useCallback((next: AssetStatus) => { if (client) reportAsset(asset.key, next, client); }, [asset.key, client, reportAsset]);
   if (!client) return <BundledImage {...props} source={fallbacks[state]} />;
-  return <AssetlibStateImage {...props} client={client} asset={asset} state={state} fallbacks={fallbacks} revision={revision} onStatus={onStatus} />;
+  return <AssetlibStateImage {...props} client={client} asset={asset} state={state} fallbacks={fallbacks} appearance={appearance} revision={revision} onStatus={onStatus} />;
 }
 
 export function sourceLabel(status: AssetStatus | undefined, connected: boolean): string {
