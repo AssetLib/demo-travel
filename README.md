@@ -23,7 +23,7 @@ Open `http://127.0.0.1:4176`. If occupied, use `ASSETLIB_PREVIEW_PORT=4186 npm r
 
 The default route is Travel, encoded in source and app configuration, so no environment file is required. Both screens remain available to demonstrate one app receiving different placements. Optional public settings are in `.env.example`; copy it to `.env.local` to override the console URL or default view, then restart Expo or rebuild the export. Never put account credentials or private keys in public environment variables.
 
-Both SDK packages install from the exact **0.4.0-preview.1** tarballs published on the [sdk-js GitHub release](https://github.com/AssetLib/sdk-js/releases/tag/v0.4.0-preview.1). They are copied unchanged into `vendor/`, `vendor/SHA256SUMS` repeats the release's hashes, and the lockfile records their integrity. No sibling checkout, private registry, or local SDK source is required. `npm run assets:codegen` invokes the installed package's CLI and reads the checked-in catalog offline.
+Both SDK packages install from the exact **0.5.0-preview.1** tarballs published on the [sdk-js GitHub release](https://github.com/AssetLib/sdk-js/releases/tag/v0.5.0-preview.1). They are copied unchanged into `vendor/`, `vendor/SHA256SUMS` repeats the release's hashes, and the lockfile records their integrity. No sibling checkout, private registry, or local SDK source is required. `npm run assets:codegen` invokes the installed package's CLI and reads the checked-in catalog offline.
 
 ## Connect your account
 

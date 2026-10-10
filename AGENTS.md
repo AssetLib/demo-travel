@@ -30,7 +30,7 @@ CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel 
 - `src/assetlib/usePublishedAssets.ts`: paged published-asset feed (pages of 12, pinned to the first page's release sequence, aborted on disconnect, refresh and unmount).
 - `src/app/`: Expo Router routes `travel`, `tasks`, `connect`; `index.tsx` redirects by variant. There is no tab bar: the non-default screen is reached only by its path, and **Back** on `/connect` returns to `/`. Screen code is in `src/screens/TravelScreen.tsx`; shell, themes and the connection pill are in `src/components/Lab.tsx`.
 - `assets/`: bundled fallbacks. `assets/source/*.svg` are the originals; regenerate PNGs with `npm run assets:generate` and `node scripts/generate-progress-assets.mjs`.
-- `vendor/`: the `@assetlib/sdk-core` and `@assetlib/sdk-expo` 0.4.0-preview.1 tarballs from the sdk-js `v0.4.0-preview.1` GitHub release, unchanged, and that release's `SHA256SUMS` lines for them (`vendor/README.md` has the update steps).
+- `vendor/`: the `@assetlib/sdk-core` and `@assetlib/sdk-expo` 0.5.0-preview.1 tarballs from the sdk-js `v0.5.0-preview.1` GitHub release, unchanged, and that release's `SHA256SUMS` lines for them (`vendor/README.md` has the update steps).
 - `scripts/preview.py`: loopback static server with a hard-coded route list. Add new routes there too.
 
 ## Invariants
