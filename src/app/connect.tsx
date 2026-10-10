@@ -10,6 +10,7 @@ const placements = [
   { key: 'travel.coast', name: 'The quiet coast', screen: 'Travel', ratio: '4:3' },
   { key: 'travel.ridge', name: 'A path through the pines', screen: 'Travel', ratio: '4:3' },
   { key: 'tasks.garden', name: 'Growing plant · 4 stages', screen: 'Tasks', ratio: '3:2' },
+  { key: 'travel.save', name: 'Save icon · tintable', screen: 'Travel', ratio: '1:1' },
 ] as const;
 
 const CONSOLE_URL = 'https://console.assetlib.dev';
@@ -60,7 +61,7 @@ export default function ConnectScreen() {
 
       <View style={styles.step}><Text style={styles.stepNumber}>01</Text><View style={styles.stepContent}>
         <Text style={styles.stepTitle}>Create your app in Assetlib</Text>
-        <Text style={styles.body}>Create an account in the console, then create a workspace with its demo app. Its three placements match these samples.</Text>
+        <Text style={styles.body}>Create an account in the console, then create a workspace with its demo app. Its four placements match these samples.</Text>
         {consoleUrl ? <Pressable accessibilityRole="link" accessibilityLabel="Open Assetlib console" onPress={() => void openConsole()} style={styles.outlineButton}><Text style={styles.outlineButtonText}>Open Assetlib console</Text><Feather name="arrow-up-right" size={15} color="#36513a" /></Pressable> : <Text style={styles.hint}>This build has no console address yet. Set EXPO_PUBLIC_ASSETLIB_CONSOLE_URL when running it, or paste an existing app’s public config below.</Text>}
         {linkError && <Text accessibilityRole="alert" style={styles.error}>{linkError}</Text>}
       </View></View>
@@ -82,7 +83,7 @@ export default function ConnectScreen() {
       </View></View>
 
       <View style={styles.placements}>
-        <Text style={styles.sectionLabel}>THREE CONNECTED PLACEMENTS</Text>
+        <Text style={styles.sectionLabel}>FOUR CONNECTED PLACEMENTS</Text>
         {placements.map(placement => <View key={placement.key} style={styles.placement}>
           <View style={styles.placementTop}><Text style={styles.placementName}>{placement.name}</Text><Text style={styles.ratio}>{placement.ratio}</Text></View>
           <Text style={styles.placementKey}>{placement.screen} · {placement.key}</Text>
