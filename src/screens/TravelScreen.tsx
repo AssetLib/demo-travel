@@ -14,11 +14,12 @@ const places = [
 ];
 type TravelRow = { kind: 'sample'; id: string; place: typeof places[number] } | { kind: 'published'; id: string; asset: DynamicAssetRef };
 const placeholder = require('../../assets/destination-placeholder.png');
+const saveIcon = require('../../assets/save-icon.png');
 const viewabilityConfig = { itemVisiblePercentThreshold: 1 };
 
 function SaveButton({ saved, name, onPress }: { saved: boolean; name: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={`${saved ? 'Unsave' : 'Save'} ${name}`} accessibilityState={{ selected: saved }} aria-pressed={saved} onPress={onPress} style={({ pressed }) => [styles.save, saved && styles.saveActive, pressed && styles.pressed]}>
-    <Feather name="heart" size={17} color={saved ? theme.onFill : theme.ink} />
+    <ManagedArtwork asset={AppAssets.Travel.save} fallback={saveIcon} tintColor={saved ? theme.onFill : theme.ink} style={styles.saveIcon} />
   </Pressable>;
 }
 
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   pictureWrap: { width: '100%', aspectRatio: 4 / 3, backgroundColor: '#e4dcc7' }, picture: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   caption: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16, backgroundColor: theme.caption },
   captionText: { flex: 1, minWidth: 0 }, location: { fontFamily: type.medium, fontSize: 11, color: theme.accent }, placeTitle: { fontFamily: type.display, fontSize: 20, letterSpacing: -0.4, color: theme.ink, marginTop: 3 },
-  save: { width: 36, height: 36, borderRadius: 18, backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.line, alignItems: 'center', justifyContent: 'center' }, saveActive: { backgroundColor: theme.fill, borderColor: theme.fill }, pressed: { opacity: 0.7 },
+  save: { width: 36, height: 36, borderRadius: 18, backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.line, alignItems: 'center', justifyContent: 'center' }, saveActive: { backgroundColor: theme.fill, borderColor: theme.fill }, saveIcon: { width: 18, height: 18 }, pressed: { opacity: 0.7 },
   body: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 6 }, placeDescription: { fontFamily: type.regular, fontSize: 13, lineHeight: 20, color: theme.muted },
   planRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 44, marginTop: 8, borderTopWidth: 1, borderTopColor: theme.line }, planText: { fontFamily: type.medium, fontSize: 13, color: theme.ink },
   itinerary: { backgroundColor: theme.wash, padding: 14, gap: 10, marginBottom: 10, borderRadius: 12 }, idea: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' }, ideaNumber: { fontFamily: type.medium, fontSize: 12, color: theme.accent, width: 14, lineHeight: 19 }, ideaText: { fontFamily: type.regular, fontSize: 13, lineHeight: 19, color: theme.ink, flex: 1 },

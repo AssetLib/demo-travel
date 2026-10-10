@@ -54,7 +54,10 @@ const icon = svg(`
   <circle cx="96" cy="91" r="7" fill="#e6b35f"/>
 `, '0 0 128 128');
 
-for (const [name, source] of Object.entries({ coast, ridge, icon })) {
+// Tintable icon for travel.save: one shape in currentColor, drawn on a 24 × 24 canvas.
+const saveIcon = svg(`<path fill="currentColor" d="M12 20.5L4.28 12.25A4.75 4.75 0 1 1 12 6.88A4.75 4.75 0 1 1 19.72 12.25Z"/>`, '0 0 24 24');
+
+for (const [name, source] of Object.entries({ coast, ridge, icon, 'save-icon': saveIcon })) {
   await writeFile(`${root}/source/${name}.svg`, source);
 }
 
@@ -63,4 +66,6 @@ await copyFile(`${root}/coast-hero.png`, `${root}/coast-hero-copy.png`);
 await sharp(Buffer.from(ridge)).resize(1200, 900).png().toFile(`${root}/ridge-card.png`);
 await sharp(Buffer.from(icon)).resize(64, 64).png().toFile(`${root}/essential-mark.png`);
 await sharp(Buffer.from(icon)).resize(1024, 1024).png().toFile(`${root}/app-icon.png`);
+// A black mask on transparency, rasterized at 3× (72 × 72) so it stays crisp; the app supplies the tint.
+await sharp(Buffer.from(saveIcon.replace('currentColor', '#000000')), { density: 72 * 3 }).resize(72, 72).png().toFile(`${root}/save-icon.png`);
 console.log('Generated original bundled assets, including the documented duplicate and oversize audit fixtures.');

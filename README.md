@@ -2,7 +2,7 @@
 
 [Open the hosted travel demo](https://assetlib-travel.vercel.app) · [Create an Assetlib account](https://console.assetlib.dev)
 
-An original Expo app with the real [Assetlib SDK](https://github.com/AssetLib/sdk-js) already connected to three typed image placements. Save fictional travel ideas and open simple itineraries. Bundled artwork keeps the app usable before you connect an account and whenever remote artwork is unavailable.
+An original Expo app with the real [Assetlib SDK](https://github.com/AssetLib/sdk-js) already connected to four typed placements: three images and one tintable icon. Save fictional travel ideas and open simple itineraries. Bundled artwork keeps the app usable before you connect an account and whenever remote artwork is unavailable.
 
 This is **preview software**. The browser path is the first supported verification target. Native iOS and Android builds have not been verified; neither app-store readiness nor a clean dependency audit is claimed. Read [DEPENDENCY-REVIEW.md](DEPENDENCY-REVIEW.md) before adopting the sample.
 
@@ -42,9 +42,12 @@ Account credentials stay in the console. The demo accepts only public identifier
 | --- | --- | --- | --- |
 | `AppAssets.Travel.coast` | `travel.coast` | 1200 × 900, 4:3 | `assets/coast-hero.png` |
 | `AppAssets.Travel.ridge` | `travel.ridge` | 1200 × 900, 4:3 | `assets/ridge-card.png` |
+| `AppAssets.Travel.save` | `travel.save` | 24 × 24 tintable icon (`"rendering": "template"`) | `assets/save-icon.png`, a 72 × 72 one-color mask |
 | `AppAssets.Tasks.garden` | `tasks.garden` | 600 × 400, 3:2, states `empty`, `started`, `growing`, `complete` | `assets/task-garden-<state>.png`, one per state |
 
 `assetlib.catalog.json` generates `src/assets.generated.ts`. Components use generated properties rather than repeating placement strings. This preview checks placement identity and shape; it does not claim a separately versioned runtime placement contract.
+
+`travel.save` is a tintable icon: Assetlib delivers the shape and the app supplies the color. The Travel screen's save button passes `tintColor` from the Roam theme (ink when unsaved, the on-fill color when saved), and the SDK applies that tint to the delivered mask and to the bundled PNG alike. TypeScript requires `tintColor` for this reference.
 
 `src/assetlib/Connection.tsx` creates the real SDK client and renders `AssetlibImage` and `AssetlibStateImage`, using Expo Image for downloaded PNG/WebP support and opting into normalized SVG in the browser. Both sample palettes are light only, so the app requests light artwork rather than following the system color scheme. Native uses prepared raster versions. `src/app/connect.tsx` manages setup and refresh. `src/screens/TravelScreen.tsx` and `src/app/tasks.tsx` contain the app screens. Essential navigation and branding remain bundled.
 
@@ -69,6 +72,8 @@ Verified on 2026-10-07 with the SDK release current at that time: fresh `npm ci`
 The hosted travel demo also passed live publish/refresh/rollback acceptance in Chrome. On the same running page, sequence 1 showed the original coast, sequence 2 replaced `travel.coast` with the Alpine weekend artwork, and rollback published sequence 3 and restored the coast. Each change was visibly confirmed after **Check for updates**, without rebuilding the demo. That deployment was built with Node 22. [CI run 37711586159](https://github.com/AssetLib/demo-travel/actions/runs/37711586159) passed for commit `d661ddc927e1395b736b0188a163133e9fe8845e`.
 
 Verified on 2026-10-09 after moving to SDK 0.4.0-preview.1: both vendored tarballs matched the release's `SHA256SUMS`, and under Node 24 `npm ci`, `npm run verify` (code generation with no diff, typecheck, lint, web export) and `npx expo-doctor` passed. Against the static export in headless Chromium, Travel and Tasks rendered their bundled artwork with no console errors, **Open Assetlib console** opened console.assetlib.dev, and public configs carrying the console's pinned key set were accepted, saved, restored after reload and disconnected, both with a manifest URL on console.assetlib.dev and with one on the legacy assetlib-console.vercel.app delivery host. Delivery responses were stubbed in that check, so it did not verify a live signed release; the live publish/refresh/rollback acceptance above has not been repeated with this SDK version.
+
+Verified on 2026-10-10 after moving to SDK 0.5.0-preview.1 and adding `travel.save`: both vendored tarballs matched the release's `SHA256SUMS`, code generation for the existing placements was unchanged, and under Node 24 `npm ci` and `npm run verify` passed with no generated-file diff. In headless Chromium at 390 and 1440 px wide, with no account connected, the Travel save button drew the bundled `save-icon.png` in the Roam ink color, switched to the on-fill color when saved and back when unsaved, kept its 36 px target, and the page logged no console errors. This checks the bundled fallback in a browser only: no live template release has been published to this app yet, and the live publish/refresh/rollback acceptance has not been repeated with this SDK version.
 
 Current compatible Expo dependencies have unresolved advisories, including a router URL-decoding availability concern. No unsupported framework downgrade or speculative major dependency override was applied. See [DEPENDENCY-REVIEW.md](DEPENDENCY-REVIEW.md) for affected chains and primary advisory links. Keep the development server local; use the static export for a public preview.
 

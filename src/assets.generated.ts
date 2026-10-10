@@ -11,6 +11,12 @@ export const AppAssets = {
       "key": "travel.ridge",
       "width": 1200,
       "height": 900
+    },
+    "save": {
+      "key": "travel.save",
+      "width": 24,
+      "height": 24,
+      "rendering": "template"
     }
   },
   "Tasks": {

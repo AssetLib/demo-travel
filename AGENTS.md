@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Roam is a small, fictional travel app built with Expo. It is a public, MIT-licensed example of a customer's app using the Assetlib JavaScript SDK (`@assetlib/sdk-core` and `@assetlib/sdk-expo` from [AssetLib/sdk-js](https://github.com/AssetLib/sdk-js)) with three placements and bundled fallbacks. Its default route is Travel; the Tasks route is kept to show one app receiving several placements. The maintainers deploy https://assetlib-travel.vercel.app from this repo's static web export. [AssetLib/demo-todo](https://github.com/AssetLib/demo-todo) ("Daylight") shares this source and differs only in the default variant (`EXPO_PUBLIC_ASSETLIB_DEMO`), app name/slug/scheme, package name and README. Make shared changes in both repos.
+Roam is a small, fictional travel app built with Expo. It is a public, MIT-licensed example of a customer's app using the Assetlib JavaScript SDK (`@assetlib/sdk-core` and `@assetlib/sdk-expo` from [AssetLib/sdk-js](https://github.com/AssetLib/sdk-js)) with four placements and bundled fallbacks. Its default route is Travel; the Tasks route is kept to show one app receiving several placements. The maintainers deploy https://assetlib-travel.vercel.app from this repo's static web export. [AssetLib/demo-todo](https://github.com/AssetLib/demo-todo) ("Daylight") shares this source and differs only in the default variant (`EXPO_PUBLIC_ASSETLIB_DEMO`), app name/slug/scheme, package name and README. Make shared changes in both repos.
 
 ## Commands
 
@@ -23,20 +23,20 @@ CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel 
 
 ## Layout
 
-- `assetlib.catalog.json`: the app's placements (`travel.coast`, `travel.ridge`, and `tasks.garden` with states `empty`, `started`, `growing`, `complete`).
+- `assetlib.catalog.json`: the app's placements (`travel.coast`, `travel.ridge`, the tintable icon `travel.save` with `"rendering": "template"`, and `tasks.garden` with states `empty`, `started`, `growing`, `complete`).
 - `src/assets.generated.ts`: generated `AppAssets` references. Never edit by hand.
-- `src/assetlib/Connection.tsx`: SDK client, public-config parsing and storage, refresh and disconnect, and the `ManagedArtwork` / `ManagedStateArtwork` wrappers that render bundled art when no client exists. `APP_APPEARANCE` requests light artwork because both palettes are light only (the SDK's default follows the system color scheme).
+- `src/assetlib/Connection.tsx`: SDK client, public-config parsing and storage, refresh and disconnect, and the `ManagedArtwork` / `ManagedStateArtwork` wrappers that render bundled art when no client exists. `ManagedArtwork` keeps the SDK's rule that a template reference needs `tintColor` and passes it to the remote and the bundled image. `APP_APPEARANCE` requests light artwork because both palettes are light only (the SDK's default follows the system color scheme).
 - `src/assetlib/Garden.tsx`, `garden-state.ts`: app-owned task progress picks one of four garden states, each with its own bundled image.
 - `src/assetlib/usePublishedAssets.ts`: paged published-asset feed (pages of 12, pinned to the first page's release sequence, aborted on disconnect, refresh and unmount).
 - `src/app/`: Expo Router routes `travel`, `tasks`, `connect`; `index.tsx` redirects by variant. There is no tab bar: the non-default screen is reached only by its path, and **Back** on `/connect` returns to `/`. Screen code is in `src/screens/TravelScreen.tsx`; shell, themes and the connection pill are in `src/components/Lab.tsx`.
-- `assets/`: bundled fallbacks. `assets/source/*.svg` are the originals; regenerate PNGs with `npm run assets:generate` and `node scripts/generate-progress-assets.mjs`.
+- `assets/`: bundled fallbacks. `assets/source/*.svg` are the originals; regenerate PNGs with `npm run assets:generate` (which also draws the 72 × 72 `save-icon.png` mask) and `node scripts/generate-progress-assets.mjs`.
 - `vendor/`: the `@assetlib/sdk-core` and `@assetlib/sdk-expo` 0.5.0-preview.1 tarballs from the sdk-js `v0.5.0-preview.1` GitHub release, unchanged, and that release's `SHA256SUMS` lines for them (`vendor/README.md` has the update steps).
 - `scripts/preview.py`: loopback static server with a hard-coded route list. Add new routes there too.
 
 ## Invariants
 
-- **Placements come from the catalog.** Add or change a placement in `assetlib.catalog.json`, run `npm run assets:codegen`, commit both, and use the generated `AppAssets` property. Do not repeat key strings in components, and do not build a flow where placements are typed into the console first. The hosted console's demo workspace seeds these same three placements, so keys and sizes must keep matching (the connection screen lists them in `src/app/connect.tsx`).
-- **Bundled fallbacks always render.** Every placement keeps a bundled image: one per state for `tasks.garden`, and `assets/destination-placeholder.png` for the published collection. The app must work before connection, offline, and when delivery, verification or decoding fails. Never remove a `fallback`/`fallbacks` prop or the no-client `BundledImage` path.
+- **Placements come from the catalog.** Add or change a placement in `assetlib.catalog.json`, run `npm run assets:codegen`, commit both, and use the generated `AppAssets` property. Do not repeat key strings in components, and do not build a flow where placements are typed into the console first. The hosted console's demo workspace seeds `travel.coast`, `travel.ridge` and `tasks.garden`, so keys and sizes must keep matching (the connection screen lists them in `src/app/connect.tsx`). `travel.save` (24 × 24, `rendering: template`) matches the template placement in the console's tintable-icon demo seed.
+- **Bundled fallbacks always render.** Every placement keeps a bundled image: one per state for `tasks.garden`, a one-color mask on transparency for the tintable `travel.save` (`assets/save-icon.png`, tinted with the same `tintColor` as remote artwork), and `assets/destination-placeholder.png` for the published collection. The app must work before connection, offline, and when delivery, verification or decoding fails. Never remove a `fallback`/`fallbacks` prop or the no-client `BundledImage` path.
 - **Public config only.** `readPublicConfig` accepts only the keys in `CONFIG_FIELDS` (the SDK's public config: ids, environment, manifest URL, `pinnedPublicKey`/`keyId` and the `pinnedPublicKeys`/`keyIds` key set the console emits) and rejects anything else; keep it strict, but add a field when the SDK's public config gains one, or pasted configs from the console are rejected. Never add passwords, private signing keys, admin tokens or session cookies to the app, env files or tests. The config is stored in AsyncStorage under `@assetlib/mobile-lab/public-config/v1`; renaming that key drops saved connections. Disconnect removes only the saved config; verified cache and replay protection stay on the device by design.
 - **Console host.** Links a person clicks to sign in or use the console go to https://console.assetlib.dev (`CONSOLE_URL` in `src/app/connect.tsx`, `.env.example`, README). The legacy `assetlib-console.vercel.app` host still serves delivery and bearer-token API routes but rejects sign-in, so `safeConsoleUrl` maps it to the canonical console. Saved configs whose manifest URL is on the legacy host must keep working: never reject a delivery host in config parsing.
 - **SDK pin.** `@assetlib/sdk-core` and `@assetlib/sdk-expo` move together at one exact version taken from a public sdk-js GitHub release tarball, never a sibling checkout, `npm link`, or a version range. A change touches `package.json`, `package-lock.json`, `vendor/` with `SHA256SUMS` and the `.gitignore` negations (while tarballs are vendored), and the README version text. Rerun codegen afterwards: the `assetlib-codegen` binary ships in sdk-core.
@@ -49,9 +49,10 @@ CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel 
 
 There are no tags or GitHub releases; `main` is the source the maintainers deploy. The app version lives in `package.json` (`version`) and `app.json` (`expo.version`). `vercel.json` expects `npm ci`, `npm run export:web` and output in `dist/`, with client-side routes rewritten to `index.html`; keep those working.
 
-## Known gaps (2026-10-09; remove each line once fixed)
+## Known gaps (2026-10-10; remove each line once fixed)
 
 - Live publish/refresh/rollback acceptance on SDK 0.4.0-preview.1 passed on 2026-10-09 against the deployed travel demo and the hosted demo workspace: `travel.coast` changed with release 7 and returned with the rollback release 8 (browser check of the web export, not a native or device run).
+- `travel.save` is verified only with its bundled, tinted fallback (2026-10-10, browser check of the web export). As of 2026-10-10 the console's tintable-icon support and its demo seed are not deployed, so no live template release has been checked, and the connection screen does not list `travel.save` yet; add it there once the hosted demo workspace seeds it.
 - Native iOS and Android builds have never been verified.
 
 ## Don'ts

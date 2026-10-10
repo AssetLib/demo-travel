@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { parsePublicConfig, type AssetlibConfig, type AssetStatus, type ClientStatus } from '@assetlib/sdk-core';
+import { parsePublicConfig, type AssetlibConfig, type AssetRef, type AssetStatus, type ClientStatus } from '@assetlib/sdk-core';
 import { AssetlibImage, AssetlibStateImage, createExpoAssetClient, type AssetlibImageProps } from '@assetlib/sdk-expo';
 import { Image as BundledImage } from 'expo-image';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
@@ -166,11 +166,11 @@ export function useAssetConnection() {
 // artwork instead of the SDK's default of following the system color scheme.
 export const APP_APPEARANCE = 'light';
 
-export function ManagedArtwork({ asset, fallback, appearance = APP_APPEARANCE, ...props }: Omit<AssetlibImageProps, 'client' | 'revision' | 'onStatus'>) {
+export function ManagedArtwork<R extends AssetRef>({ asset, fallback, appearance = APP_APPEARANCE, ...props }: Omit<AssetlibImageProps<R>, 'client' | 'revision' | 'onStatus'>) {
   const { client, revision, reportAsset } = useAssetConnection();
   const onStatus = useCallback((next: AssetStatus) => { if (client) reportAsset(asset.key, next, client); }, [asset.key, client, reportAsset]);
   if (!client) return <BundledImage {...props} source={fallback} />;
-  return <AssetlibImage {...props} client={client} asset={asset} fallback={fallback} appearance={appearance} revision={revision} onStatus={onStatus} />;
+  return <AssetlibImage<AssetRef> {...props} client={client} asset={asset} fallback={fallback} appearance={appearance} revision={revision} onStatus={onStatus} />;
 }
 
 export function ManagedStateArtwork({ asset, state, fallbacks, appearance = APP_APPEARANCE, ...props }: Omit<ComponentProps<typeof AssetlibStateImage>, 'client' | 'revision' | 'onStatus'>) {
