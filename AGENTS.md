@@ -51,7 +51,7 @@ There are no tags or GitHub releases; `main` is the source the maintainers deplo
 
 ## Known gaps (2026-10-09; remove each line once fixed)
 
-- Live publish/refresh/rollback acceptance against a hosted signed release has not been repeated since the move to SDK 0.4.0-preview.1; the 2026-10-09 browser check stubbed delivery.
+- Live publish/refresh/rollback acceptance on SDK 0.4.0-preview.1 passed on 2026-10-09 against the deployed travel demo and the hosted demo workspace: `travel.coast` changed with release 7 and returned with the rollback release 8 (browser check of the web export, not a native or device run).
 - Native iOS and Android builds have never been verified.
 
 ## Don'ts
