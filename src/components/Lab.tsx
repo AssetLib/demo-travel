@@ -83,11 +83,14 @@ export function Segmented<T extends string>({ theme, options, value, onChange }:
   })}</View>;
 }
 
+const DEMO_VARIANT = process.env.EXPO_PUBLIC_ASSETLIB_DEMO ?? 'travel';
+
 export function LabShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const { width, height } = useWindowDimensions();
   const desktop = width >= 900;
-  const isTasks = path === '/tasks';
+  // Shared screens such as /connect follow the app's own variant, not the travel default.
+  const isTasks = path === '/tasks' || (path !== '/travel' && DEMO_VARIANT === 'todo');
   return (
     <View style={[styles.stage, desktop && styles.desktopStage]}>
       {desktop && <View style={styles.rail}>
