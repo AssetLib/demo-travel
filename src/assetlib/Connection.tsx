@@ -195,7 +195,8 @@ export function ManagedStateArtwork({ asset, state, fallbacks, appearance = APP_
 // Only a 404 for the manifest says the app has no published release in this environment yet; the SDK reports it
 // as "Assetlib delivery returned 404.". Any other failure (no network, a host that does not resolve, a timeout, a
 // server error, a release that fails verification) means the connection could not be checked, which says nothing
-// about whether a release exists. An unrecognized message falls to that wording too.
+// about whether a release exists. An unrecognized message falls to that wording too. A device that already holds a
+// verified release keeps showing it after a failed check, so the title names that release and what the check found.
 const NO_PUBLISHED_RELEASE = /delivery returned 404\b/;
 
 export type ConnectionSummary = { title: string; live: boolean };
@@ -205,9 +206,13 @@ export function connectionSummary(config: AssetlibConfig | null, status: ClientS
   if (!config) return { title: 'Using bundled artwork', live: false };
   const sequence = status?.sequence ?? 0;
   const lastError = status?.lastError ?? null;
-  if (sequence) return lastError ? { title: `Release ${sequence} · connection could not be checked`, live: false } : { title: `Release ${sequence}`, live: true };
+  const noRelease = lastError !== null && NO_PUBLISHED_RELEASE.test(lastError);
+  if (sequence) {
+    if (!lastError) return { title: `Release ${sequence}`, live: true };
+    return { title: `Release ${sequence} · ${noRelease ? 'no published release found' : 'connection could not be checked'}`, live: false };
+  }
   if (busy) return { title: 'Checking connection', live: false };
-  if (lastError && NO_PUBLISHED_RELEASE.test(lastError)) return { title: 'Waiting for a published release', live: false };
+  if (noRelease) return { title: 'Waiting for a published release', live: false };
   return { title: 'Connection could not be checked', live: false };
 }
 
