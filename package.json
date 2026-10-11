@@ -40,7 +40,7 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --max-warnings 0",
-    "export:web": "expo export --platform web",
+    "export:web": "expo export --platform web --clear",
     "assets:generate": "node scripts/generate-assets.mjs",
     "preview:web": "python3 scripts/preview.py",
     "assets:codegen": "assetlib-codegen ./assetlib.catalog.json > ./src/assets.generated.ts",

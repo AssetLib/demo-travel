@@ -11,7 +11,7 @@ npm ci                  # installs the SDK from the tarballs in vendor/
 npm run assets:codegen  # assetlib.catalog.json -> src/assets.generated.ts, offline
 npm run typecheck       # tsc --noEmit
 npm run lint            # eslint src --max-warnings 0
-npm run export:web      # expo export --platform web -> dist/
+npm run export:web      # expo export --platform web --clear -> dist/ (--clear: Metro's shared cache otherwise reuses another build's app config and EXPO_PUBLIC_ values)
 npm run preview:web     # serve dist/ at http://127.0.0.1:4176 (ASSETLIB_PREVIEW_PORT to change)
 npm run verify          # codegen + typecheck + lint + export:web
 npm run web -- --localhost --port 8082   # live development
