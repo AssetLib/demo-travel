@@ -37,8 +37,20 @@ export function readPublicConfig(text: string): AssetlibConfig {
   return parsePublicConfig(input, { allowInsecureLoopback: ALLOW_LOOPBACK });
 }
 
+// The SDK passes transport failures through in the platform's own words, for example
+// "fetch failed: java.net.UnknownHostException: …" from expo/fetch on Android, or
+// "Failed to fetch" in a browser. Show plain copy for those. Keep the SDK's verification
+// and HTTP messages, which are already written for people.
+const TRANSPORT_FAILURE = /fetch failed|failed to fetch|network request failed|networkerror|load failed|internet connection appears to be offline|java\.(?:net|io)\./i;
+const UNREACHABLE = 'Assetlib could not be reached. Check this device’s connection.';
+
+export function plainError(message: string): string {
+  if (!TRANSPORT_FAILURE.test(message)) return message.slice(0, 240);
+  return message.startsWith('Using bundled artwork.') ? `Using bundled artwork. ${UNREACHABLE}` : UNREACHABLE;
+}
+
 function messageFor(error: unknown): string {
-  return error instanceof Error ? error.message.slice(0, 240) : 'The connection could not be checked. Your bundled artwork is still available.';
+  return error instanceof Error ? plainError(error.message) : 'The connection could not be checked. Your bundled artwork is still available.';
 }
 
 export function AssetConnectionProvider({ children }: { children: ReactNode }) {
@@ -75,7 +87,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
       if (operation.current !== currentOperation) return;
       setStatus(nextClient.getStatus());
       setRevision(value => value + 1);
-      if (result.error) setError(result.error);
+      if (result.error) setError(plainError(result.error));
       else setNotice('Connection checked. Open a sample to see its artwork.');
     } catch (caught) {
       if (operation.current !== currentOperation) return;
@@ -120,7 +132,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
       if (operation.current !== currentOperation) return;
       setStatus(activeClient.getStatus());
       setRevision(value => value + 1);
-      if (result.error) setError(result.error);
+      if (result.error) setError(plainError(result.error));
       else setNotice(result.updated ? 'New release received. Open a sample to load its artwork.' : 'This app has the latest published release.');
     } catch (caught) {
       if (operation.current === currentOperation) setError(messageFor(caught));

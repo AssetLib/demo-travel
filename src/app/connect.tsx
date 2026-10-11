@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { sourceLabel, useAssetConnection } from '../assetlib/Connection';
+import { plainError, sourceLabel, useAssetConnection } from '../assetlib/Connection';
 import { colors, type } from '../components/Lab';
 
 const placements = [
@@ -88,7 +88,7 @@ export default function ConnectScreen() {
           <View style={styles.placementTop}><Text style={styles.placementName}>{placement.name}</Text><Text style={styles.ratio}>{placement.ratio}</Text></View>
           <Text style={styles.placementKey}>{placement.screen} · {placement.key}</Text>
           <Text style={styles.source} accessibilityLiveRegion="polite">{sourceLabel(assets[placement.key], !!config)}{assets[placement.key]?.sequence ? ` · Release ${assets[placement.key].sequence}` : ''}</Text>
-          {assets[placement.key]?.source === 'bundle' && <Text style={styles.hint}>{assets[placement.key].message}</Text>}
+          {assets[placement.key]?.source === 'bundle' && <Text style={styles.hint}>{plainError(assets[placement.key].message)}</Text>}
         </View>)}
       </View>
 
