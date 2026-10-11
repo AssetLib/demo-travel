@@ -48,7 +48,7 @@ CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel 
 
 ## Release and versioning
 
-There are no tags or GitHub releases; `main` is the source the maintainers deploy. The app version lives in `package.json` (`version`) and `app.json` (`expo.version`). `vercel.json` expects `npm ci`, `npm run export:web` and output in `dist/`, with client-side routes rewritten to `index.html`; keep those working.
+There are no tags or GitHub releases; `main` is what is deployed. An agent that has finished and verified its work merges to `main`, pushes, and deploys the web demo itself, as the workspace AGENTS.md "Finish the job" rule describes (founder decision, October 11, 2026). Pushing deploys nothing: the Vercel project `assetlib-travel` (scope `bizily`) has no Git connection. Deploy from a clean worktree of the pushed `main` with `.vercel/project.json` copied in (`vercel deploy --prod --scope bizily --cwd <worktree>`), read the alias line, check https://assetlib-travel.vercel.app, and record the deployment ID and checks in the workspace OPERATIONS.md and HQ. The app version lives in `package.json` (`version`) and `app.json` (`expo.version`). `vercel.json` expects `npm ci`, `npm run export:web` and output in `dist/`, with client-side routes rewritten to `index.html`; keep those working.
 
 ## Known gaps (2026-10-11; remove each line once fixed)
 
@@ -61,7 +61,7 @@ There are no tags or GitHub releases; `main` is the source the maintainers deplo
 
 - Don't hand-edit `src/assets.generated.ts`, or delete or weaken a fallback path.
 - Don't commit `.env*` files other than `.env.example`, or `dist/`, `output/`, `.vercel/`.
-- Don't deploy, publish or change hosting settings from an agent session.
+- Don't deploy a dirty tree, another session's uncommitted changes, or from the workspace root, and don't change hosting settings from an agent session.
 - Don't expose the dev server publicly; public previews use the static export.
 - Don't run `npm audit fix --force` or move off the Expo SDK 57 matrix to clear advisories; see `DEPENDENCY-REVIEW.md`.
 
