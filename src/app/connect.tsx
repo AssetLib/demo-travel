@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { plainError, sourceLabel, useAssetConnection } from '../assetlib/Connection';
+import { connectionSummary, plainError, sourceLabel, useAssetConnection } from '../assetlib/Connection';
 import { colors, type } from '../components/Lab';
 
 const placements = [
@@ -35,6 +35,7 @@ export default function ConnectScreen() {
   const [actionArea, setActionArea] = useState<'config' | 'refresh'>('config');
   const consoleUrl = safeConsoleUrl(process.env.EXPO_PUBLIC_ASSETLIB_CONSOLE_URL ?? CONSOLE_URL) ?? safeConsoleUrl(config?.manifestUrl ? new URL(config.manifestUrl).origin : undefined);
   const pending = busy || hydrating;
+  const summary = connectionSummary(config, status, busy, hydrating);
   const configText = draft ?? (config ? JSON.stringify(config, null, 2) : '');
   const openConsole = async () => {
     if (!consoleUrl) return;
@@ -54,7 +55,7 @@ export default function ConnectScreen() {
       <Text style={styles.lead}>The samples already have their images. Connect an app to receive verified artwork from your own Assetlib workspace.</Text>
 
       <View style={styles.connectionSummary}>
-        <View style={styles.summaryHeading}><View style={[styles.dot, config && status?.sequence ? styles.connectedDot : undefined]} /><Text style={styles.summaryTitle}>{hydrating ? 'Restoring your connection' : config ? status?.sequence ? `Release ${status.sequence}` : 'Waiting for a published release' : 'Using bundled artwork'}</Text></View>
+        <View style={styles.summaryHeading}><View style={[styles.dot, summary.live ? styles.connectedDot : undefined]} /><Text style={styles.summaryTitle}>{summary.title}</Text></View>
         <Text style={styles.summaryBody}>{config ? `App ${config.appId}` : 'Everything works before you connect. The original artwork stays in the app as its fallback.'}</Text>
         {config && <Text selectable style={styles.connectionHost}>{new URL(config.manifestUrl).host}</Text>}
       </View>
@@ -115,8 +116,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: type.display, fontSize: 45, lineHeight: 49, letterSpacing: -1.8, color: colors.ink },
   lead: { fontFamily: type.regular, fontSize: 15, lineHeight: 23, color: '#5e6958', marginTop: 18, marginBottom: 24 },
   connectionSummary: { padding: 18, backgroundColor: '#e8eddf', borderRadius: 9, marginBottom: 30 },
-  summaryHeading: { flexDirection: 'row', alignItems: 'center', gap: 9 }, dot: { width: 7, height: 7, backgroundColor: '#8d967d', borderRadius: 4 }, connectedDot: { backgroundColor: '#3e7350' },
-  summaryTitle: { fontFamily: type.bold, color: '#34513d', fontSize: 14, flex: 1 }, summaryBody: { fontFamily: type.regular, color: '#5c6b52', fontSize: 12, lineHeight: 19, marginTop: 8 }, connectionHost: { fontFamily: type.medium, color: '#4b6048', fontSize: 12, marginTop: 8 },
+  summaryHeading: { flexDirection: 'row', alignItems: 'flex-start', gap: 9 }, dot: { width: 7, height: 7, backgroundColor: '#8d967d', borderRadius: 4, marginTop: 6.5 }, connectedDot: { backgroundColor: '#3e7350' },
+  summaryTitle: { fontFamily: type.bold, color: '#34513d', fontSize: 14, lineHeight: 20, flex: 1 }, summaryBody: { fontFamily: type.regular, color: '#5c6b52', fontSize: 12, lineHeight: 19, marginTop: 8 }, connectionHost: { fontFamily: type.medium, color: '#4b6048', fontSize: 12, marginTop: 8 },
   step: { flexDirection: 'row', gap: 15, paddingBottom: 27 }, stepNumber: { fontFamily: type.medium, color: '#9b8152', fontSize: 12, paddingTop: 3 }, stepContent: { flex: 1, minWidth: 0 }, stepTitle: { fontFamily: type.bold, fontSize: 16, lineHeight: 23, color: colors.ink, marginBottom: 8 }, body: { fontFamily: type.regular, color: '#5f6959', fontSize: 14, lineHeight: 22 }, hint: { fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#6a745f', marginTop: 8 },
   outlineButton: { minHeight: 48, borderWidth: 1, borderColor: '#c7ceba', borderRadius: 7, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingHorizontal: 12, marginTop: 14 }, outlineButtonText: { fontFamily: type.bold, fontSize: 13, color: '#36513a' },
   configInput: { minHeight: 180, maxHeight: 240, borderWidth: 1, borderColor: '#cdd3c2', borderRadius: 8, padding: 13, backgroundColor: '#fffdf7', fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#344936', marginTop: 14 }, primaryButton: { minHeight: 48, paddingHorizontal: 16, borderRadius: 7, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, marginTop: 14 }, primaryButtonText: { fontFamily: type.bold, color: '#f5f1e7', fontSize: 13 }, disabled: { opacity: 0.5 },
