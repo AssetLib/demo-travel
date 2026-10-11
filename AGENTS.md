@@ -17,7 +17,7 @@ npm run verify          # codegen + typecheck + lint + export:web
 npm run web -- --localhost --port 8082   # live development
 ```
 
-CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel build) runs `npm ci`, `npm run verify`, then `git diff --exit-code -- src/assets.generated.ts`. Work is done when `npm run verify` passes and the generated file has no diff. There is no unit test suite: for connection or image changes, also check the web export by hand (connect, **Check for updates**, reload, **Disconnect this app**).
+CI (`.github/workflows/ci.yml`, Node 24, matching `engines.node` and the Vercel build) runs `npm ci`, `npm run verify`, then `git diff --exit-code -- src/assets.generated.ts`. Work is done when `npm run verify` passes and the generated file has no diff. `.github/workflows/assetlib-sync.yml` runs `assetlib sync` from the exact `@assetlib/cli` dev dependency against https://console.assetlib.dev on pushes to `main`, with the `ASSETLIB_TOKEN` secret and the `ASSETLIB_ORG` and `ASSETLIB_APP` repository variables; Daylight shares the workspace app and does not run it. Move the CLI pin when the console Connect card's `@assetlib/cli` version moves. There is no unit test suite: for connection or image changes, also check the web export by hand (connect, **Check for updates**, reload, **Disconnect this app**).
 
 `EXPO_PUBLIC_*` values (listed in `.env.example`) are compiled into the export; rebuild after changing them. `EXPO_PUBLIC_ASSETLIB_ALLOW_LOOPBACK=true` allows HTTP to a loopback console for local testing only. Never set it for a hosted build.
 

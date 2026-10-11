@@ -47,6 +47,8 @@ Account credentials stay in the console. The demo accepts only public identifier
 
 `assetlib.catalog.json` generates `src/assets.generated.ts`. Components use generated properties rather than repeating placement strings. This preview checks placement identity and shape; it does not claim a separately versioned runtime placement contract.
 
+On every push to `main`, the **Assetlib sync** workflow (`.github/workflows/assetlib-sync.yml`) registers this catalog, the build, and the source lines that use each placement with the hosted demo workspace, using `@assetlib/cli` 0.3.1 from npm (a dev dependency, never the unscoped `assetlib` package). It needs the `ASSETLIB_TOKEN` repository secret, a token with the Declare scope, and the `ASSETLIB_ORG` and `ASSETLIB_APP` repository variables. Daylight shares this catalog and the same workspace app, so only Roam runs it.
+
 `travel.save` is a tintable icon: Assetlib delivers the shape and the app supplies the color. The Travel screen's save button passes `tintColor` from the Roam theme (ink when unsaved, the on-fill color when saved), and the SDK applies that tint to the delivered mask and to the bundled PNG alike. TypeScript requires `tintColor` for this reference.
 
 `src/assetlib/Connection.tsx` creates the real SDK client and renders `AssetlibImage` and `AssetlibStateImage`, using Expo Image for downloaded PNG/WebP support and opting into normalized SVG in the browser. Both sample palettes are light only, so the app requests light artwork rather than following the system color scheme. Native uses prepared raster versions. `src/app/connect.tsx` manages setup and refresh. `src/screens/TravelScreen.tsx` and `src/app/tasks.tsx` contain the app screens. Essential navigation and branding remain bundled.
