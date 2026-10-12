@@ -28,13 +28,15 @@ Both SDK packages install from the exact **0.7.0-preview.1** tarballs published 
 ## Connect your account
 
 1. Select **Connect** in the app bar at the top of the sample, then select **Open Assetlib console** ([console.assetlib.dev](https://console.assetlib.dev)).
-2. Create an account and a workspace. Its demo app starts with three matching placements and an initial release.
+2. Create an account and a workspace. Its demo app starts with four matching placements (two travel images, the four-stage task garden and a tintable save icon) and an initial release.
 3. Copy the app's **public SDK configuration** from the console. Paste it into the sample and select **Connect and check release**.
 4. Open Travel and Tasks. Travel is the default screen, and **Back** on the connection screen returns to it; the sample has no tab bar, so open Tasks at `/tasks` (for example https://assetlib-travel.vercel.app/tasks). On the connection screen, inspect each image's actual source: **Downloaded**, **Verified cache**, or **Bundled fallback**. Unvisited placements say **Open this screen to load**.
 5. In the console, upload different artwork, bind it to a placement, and publish a release.
 6. Select **Check for updates** in the running sample, then revisit the relevant screen. Its artwork should change without rebuilding this app. Verify the release number and the actual image separately.
 
 Account credentials stay in the console. The demo accepts only public identifiers, a manifest URL, and pinned verification keys (a single key or the console's key set); do not paste passwords, private signing keys, admin tokens, or session cookies.
+
+Usage reporting is off by default. The connection screen's **Send usage counts to this workspace** switch turns on the SDK's opt-in telemetry for the workspace you connected: placement keys, resolve and display counts and a random install ID, never a person or device identifier. The console's **Where used** then shows what this app resolved and displayed. The setting is remembered on this device beside the config, and changing it reconnects the app.
 
 ## Typed placements and local fallbacks
 
@@ -45,7 +47,7 @@ Account credentials stay in the console. The demo accepts only public identifier
 | `AppAssets.Travel.save` | `travel.save` | 24 × 24 tintable icon (`"rendering": "template"`) | `assets/save-icon.png`, a 72 × 72 one-color mask |
 | `AppAssets.Tasks.garden` | `tasks.garden` | 600 × 400, 3:2, states `empty`, `started`, `growing`, `complete` | `assets/task-garden-<state>.png`, one per state |
 
-`assetlib.catalog.json` generates `src/assets.generated.ts`. Components use generated properties rather than repeating placement strings. This preview checks placement identity and shape; it does not claim a separately versioned runtime placement contract.
+`assetlib.catalog.json` generates `src/assets.generated.ts`. A placement's width and height are a reference size: they fix the aspect ratio every published image must match and the size the SDK requests by default, and the console accepts any image at that ratio. Components use generated properties rather than repeating placement strings. This preview checks placement identity and shape; it does not claim a separately versioned runtime placement contract.
 
 On every push to `main`, the **Assetlib sync** workflow (`.github/workflows/assetlib-sync.yml`) registers this catalog, the build, and the source lines that use each placement with the hosted demo workspace, using `@assetlib/cli` 0.4.0 from npm (a dev dependency, never the unscoped `assetlib` package). It needs the `ASSETLIB_TOKEN` repository secret, a token with the Declare scope, and the `ASSETLIB_ORG` and `ASSETLIB_APP` repository variables. Daylight shares this catalog and the same workspace app, so only Roam runs it. The first run, on October 11, 2026 (workflow run 38170661780), registered a build with all four placements and eight source references: it created `travel.save`, which the hosted workspace did not have, found `travel.coast` and `travel.ridge`, and reported `tasks.garden` as conflicting because the workspace's placement declares no states. Syncing publishes nothing; the published release was unchanged.
 

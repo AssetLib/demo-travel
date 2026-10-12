@@ -3,12 +3,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { parsePublicConfig, type AssetlibConfig, type AssetRef, type AssetStatus, type ClientStatus } from '@assetlib/sdk-core';
 import { AssetlibImage, AssetlibStateImage, createExpoAssetClient, type AssetlibImageProps } from '@assetlib/sdk-expo';
 import { Image as BundledImage } from 'expo-image';
+import Constants from 'expo-constants';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 
 const STORAGE_KEY = '@assetlib/mobile-lab/public-config/v1';
+const USAGE_REPORTING_KEY = '@assetlib/mobile-lab/usage-reporting/v1';
 const ALLOW_LOOPBACK = process.env.EXPO_PUBLIC_ASSETLIB_ALLOW_LOOPBACK === 'true';
 const CONFIG_FIELDS = new Set(['schemaVersion', 'orgId', 'appId', 'environment', 'manifestUrl', 'pinnedPublicKey', 'keyId', 'pinnedPublicKeys', 'keyIds']);
 type Client = ReturnType<typeof createExpoAssetClient>;
+type ClientOptions = NonNullable<Parameters<typeof createExpoAssetClient>[1]>;
+
+// Usage reporting is the SDK's opt-in telemetry: placement keys, resolve and display counts and a random
+// install ID go to the connected workspace, never a person or device identifier. Off until the person turns
+// it on in Connect; the console's Where used then shows what this app resolved and displayed, per build.
+function telemetryOptions(enabled: boolean): ClientOptions['telemetry'] {
+  if (!enabled) return undefined;
+  const platform = Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : 'web';
+  const expo = Constants.expoConfig;
+  const buildNumber = platform === 'ios' ? expo?.ios?.buildNumber : platform === 'android' ? expo?.android?.versionCode?.toString() : undefined;
+  return { enabled: true, build: { platform, appVersion: expo?.version ?? 'unknown', buildNumber: buildNumber ?? 'unknown' } };
+}
 type Connection = {
   config: AssetlibConfig | null;
   client: Client | null;
@@ -19,6 +33,8 @@ type Connection = {
   revision: number;
   error: string | null;
   notice: string | null;
+  usageReporting: boolean;
+  setUsageReporting: (enabled: boolean) => Promise<void>;
   connect: (text: string) => Promise<void>;
   disconnect: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -63,12 +79,14 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [usageReporting, setUsageReportingState] = useState(false);
   const operation = useRef(0);
   const clientRef = useRef<Client | null>(null);
 
-  const activate = useCallback(async (nextConfig: AssetlibConfig, persist: boolean) => {
+  const activate = useCallback(async (nextConfig: AssetlibConfig, persist: boolean, reporting: boolean) => {
     const currentOperation = ++operation.current;
-    const nextClient = createExpoAssetClient(nextConfig, { allowVector: Platform.OS === 'web', allowInsecureLoopback: ALLOW_LOOPBACK });
+    const nextClient = createExpoAssetClient(nextConfig, { allowVector: Platform.OS === 'web', allowInsecureLoopback: ALLOW_LOOPBACK, telemetry: telemetryOptions(reporting) });
+    clientRef.current?.dispose();
     clientRef.current = nextClient;
     setClient(nextClient);
     setConfig(nextConfig);
@@ -102,9 +120,11 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
     let active = true;
     void (async () => {
       try {
-        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        const [saved, reporting] = await Promise.all([AsyncStorage.getItem(STORAGE_KEY), AsyncStorage.getItem(USAGE_REPORTING_KEY)]);
         if (!active) return;
-        if (saved) await activate(readPublicConfig(saved), false);
+        const enabled = reporting === 'on';
+        setUsageReportingState(enabled);
+        if (saved) await activate(readPublicConfig(saved), false, enabled);
       } catch {
         if (active) setError('The saved connection could not be restored. Paste your public config again.');
       } finally {
@@ -116,9 +136,19 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
 
   const connect = useCallback(async (text: string) => {
     if (busy || hydrating) return;
-    try { await activate(readPublicConfig(text), true); }
+    try { await activate(readPublicConfig(text), true, usageReporting); }
     catch (caught) { setError(messageFor(caught)); }
-  }, [activate, busy, hydrating]);
+  }, [activate, busy, hydrating, usageReporting]);
+
+  /* The setting is remembered beside the config. A connected app gets a new client, so the change applies at once:
+     turning it on starts reporting from the next resolution; turning it off drops anything not yet sent. */
+  const setUsageReporting = useCallback(async (enabled: boolean) => {
+    if (busy || hydrating) return;
+    setUsageReportingState(enabled);
+    try { await AsyncStorage.setItem(USAGE_REPORTING_KEY, enabled ? 'on' : 'off'); }
+    catch { setError('The usage-reporting setting could not be saved on this device.'); }
+    if (config) await activate(config, false, enabled);
+  }, [activate, busy, config, hydrating]);
 
   const refresh = useCallback(async () => {
     const activeClient = clientRef.current;
@@ -144,6 +174,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
   const disconnect = useCallback(async () => {
     if (busy || hydrating) return;
     ++operation.current;
+    clientRef.current?.dispose();
     clientRef.current = null;
     setClient(null);
     setConfig(null);
@@ -165,7 +196,7 @@ export function AssetConnectionProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  return <ConnectionContext.Provider value={{ config, client, status, assets, busy, hydrating, revision, error, notice, connect, disconnect, refresh, reportAsset }}>{children}</ConnectionContext.Provider>;
+  return <ConnectionContext.Provider value={{ config, client, status, assets, busy, hydrating, revision, error, notice, usageReporting, setUsageReporting, connect, disconnect, refresh, reportAsset }}>{children}</ConnectionContext.Provider>;
 }
 
 export function useAssetConnection() {

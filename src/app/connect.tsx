@@ -1,7 +1,7 @@
 import * as Linking from 'expo-linking';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { connectionSummary, plainError, sourceLabel, useAssetConnection } from '../assetlib/Connection';
 import { colors, type } from '../components/Lab';
@@ -28,7 +28,7 @@ function safeConsoleUrl(value: string | undefined): string | null {
 }
 
 export default function ConnectScreen() {
-  const { config, status, assets, busy, hydrating, error, notice, connect, disconnect, refresh } = useAssetConnection();
+  const { config, status, assets, busy, hydrating, error, notice, usageReporting, setUsageReporting, connect, disconnect, refresh } = useAssetConnection();
   const router = useRouter();
   const [draft, setDraft] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
@@ -83,6 +83,12 @@ export default function ConnectScreen() {
         <Text style={styles.hint}>The task plant uses empty, started, growing, and complete artwork. The app chooses a stage from task progress; publish all four together to update the plant.</Text>
       </View></View>
 
+      <View style={styles.step}><Text style={styles.stepNumber}>04</Text><View style={styles.stepContent}>
+        <Text style={styles.stepTitle}>Report usage, if you want</Text>
+        <View style={styles.switchRow}><Text style={[styles.body, styles.switchLabel]}>Send usage counts to this workspace</Text><Switch accessibilityLabel="Send usage counts to this workspace" value={usageReporting} disabled={pending} onValueChange={value => void setUsageReporting(value)} trackColor={{ true: '#3e7350' }} /></View>
+        <Text style={styles.hint}>Off by default. When on, the SDK sends placement keys, resolve and display counts and a random install ID to the workspace you connected, never a person or device identifier. In the console, a placement’s Where used shows what this app resolved and displayed.</Text>
+      </View></View>
+
       <View style={styles.placements}>
         <Text style={styles.sectionLabel}>FOUR CONNECTED PLACEMENTS</Text>
         {placements.map(placement => <View key={placement.key} style={styles.placement}>
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
   summaryHeading: { flexDirection: 'row', alignItems: 'flex-start', gap: 9 }, dot: { width: 7, height: 7, backgroundColor: '#8d967d', borderRadius: 4, marginTop: 6.5 }, connectedDot: { backgroundColor: '#3e7350' },
   summaryTitle: { fontFamily: type.bold, color: '#34513d', fontSize: 14, lineHeight: 20, flex: 1 }, summaryBody: { fontFamily: type.regular, color: '#5c6b52', fontSize: 12, lineHeight: 19, marginTop: 8 }, connectionHost: { fontFamily: type.medium, color: '#4b6048', fontSize: 12, marginTop: 8 },
   step: { flexDirection: 'row', gap: 15, paddingBottom: 27 }, stepNumber: { fontFamily: type.medium, color: '#9b8152', fontSize: 12, paddingTop: 3 }, stepContent: { flex: 1, minWidth: 0 }, stepTitle: { fontFamily: type.bold, fontSize: 16, lineHeight: 23, color: colors.ink, marginBottom: 8 }, body: { fontFamily: type.regular, color: '#5f6959', fontSize: 14, lineHeight: 22 }, hint: { fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#6a745f', marginTop: 8 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 2 }, switchLabel: { flex: 1 },
   outlineButton: { minHeight: 48, borderWidth: 1, borderColor: '#c7ceba', borderRadius: 7, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, paddingHorizontal: 12, marginTop: 14 }, outlineButtonText: { fontFamily: type.bold, fontSize: 13, color: '#36513a' },
   configInput: { minHeight: 180, maxHeight: 240, borderWidth: 1, borderColor: '#cdd3c2', borderRadius: 8, padding: 13, backgroundColor: '#fffdf7', fontFamily: type.regular, fontSize: 12, lineHeight: 19, color: '#344936', marginTop: 14 }, primaryButton: { minHeight: 48, paddingHorizontal: 16, borderRadius: 7, backgroundColor: colors.ink, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 10, marginTop: 14 }, primaryButtonText: { fontFamily: type.bold, color: '#f5f1e7', fontSize: 13 }, disabled: { opacity: 0.5 },
   placements: { borderTopWidth: 1, borderTopColor: '#d8dccb', paddingTop: 22 }, sectionLabel: { fontFamily: type.bold, color: '#6b775f', fontSize: 10, letterSpacing: 1.1, marginBottom: 6 }, placement: { paddingVertical: 17, borderBottomWidth: 1, borderBottomColor: '#dfe2d4' }, placementTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 }, placementName: { fontFamily: type.medium, fontSize: 14, color: colors.ink, flex: 1 }, ratio: { fontFamily: type.medium, fontSize: 11, color: '#7a846e' }, placementKey: { fontFamily: type.regular, fontSize: 11, color: '#79836c', marginTop: 4 }, source: { fontFamily: type.bold, fontSize: 12, lineHeight: 19, color: '#3e6544', marginTop: 9 },

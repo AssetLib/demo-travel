@@ -96,7 +96,7 @@ export function LabShell({ children }: { children: ReactNode }) {
       {desktop && <View style={styles.rail}>
         <View style={styles.railBrand}><Image source={require('../../assets/essential-mark.png')} style={styles.mark} /><Text style={styles.railLabel}>Assetlib sample app</Text></View>
         <Text style={styles.railHeading}>{isTasks ? 'A small task app.' : 'A small travel app.'}</Text>
-        <Text style={styles.railBody}>{isTasks ? 'Its daily illustration is an Assetlib placement, with the artwork bundled into the app as a fallback.' : 'Two of its images are Assetlib placements, with the artwork bundled into the app as a fallback.'}</Text>
+        <Text style={styles.railBody}>{isTasks ? 'Its daily illustration is an Assetlib placement, with the artwork bundled into the app as a fallback.' : 'Two of its images and its save icon are Assetlib placements, with the artwork bundled into the app as a fallback.'}</Text>
         <View style={styles.railRule} />
         <Text style={styles.railNote}>Choose Connect at the top of the app to attach a workspace, then publish a release to change the artwork here.</Text>
       </View>}
