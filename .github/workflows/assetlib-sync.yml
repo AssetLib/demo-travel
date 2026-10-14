@@ -1,6 +1,8 @@
 # Registers assetlib.catalog.json with the hosted demo workspace on every push to main (from the assetlib init template).
-# Needs the ASSETLIB_TOKEN repository secret (a Declare-scope token from Settings > Tokens in the console) and the
-# ASSETLIB_ORG and ASSETLIB_APP repository variables (the workspace and app IDs from Settings > General).
+# Needs ASSETLIB_TOKEN (a Declare-scope token from Settings > Tokens in the console) and the ASSETLIB_ORG and
+# ASSETLIB_APP repository variables (the workspace and app IDs from Settings > General). The token belongs in the
+# assetlib-sync environment with its deployment branches limited to main, not in a repository secret, so no other
+# branch can read it.
 name: Assetlib sync
 on:
   push:
@@ -9,9 +11,20 @@ on:
 permissions:
   contents: read
 jobs:
+  # GitHub compares expressions without regard to case, so the shell checks the exact ref.
+  branch_gate:
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.check.outputs.allowed }}
+    steps:
+      - id: check
+        run: |
+          if [ "$GITHUB_REF" = 'refs/heads/main' ]; then echo 'allowed=true' >> "$GITHUB_OUTPUT"; fi
   sync:
-    # Only main holds the token: a manual run from another branch is skipped.
-    if: github.ref == 'refs/heads/main'
+    # Only main runs this job: a manual run from any other branch is skipped.
+    needs: branch_gate
+    if: needs.branch_gate.outputs.allowed == 'true'
+    environment: assetlib-sync
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
