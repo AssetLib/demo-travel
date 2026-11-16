@@ -33,7 +33,8 @@ export default function ConnectScreen() {
   const [draft, setDraft] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [actionArea, setActionArea] = useState<'config' | 'refresh'>('config');
-  const consoleUrl = safeConsoleUrl(process.env.EXPO_PUBLIC_ASSETLIB_CONSOLE_URL ?? CONSOLE_URL) ?? safeConsoleUrl(config?.manifestUrl ? new URL(config.manifestUrl).origin : undefined);
+  const consoleUrl = safeConsoleUrl(config?.manifestUrl ? new URL(config.manifestUrl).origin : undefined)
+    ?? safeConsoleUrl(process.env.EXPO_PUBLIC_ASSETLIB_CONSOLE_URL ?? CONSOLE_URL);
   const pending = busy || hydrating;
   const summary = connectionSummary(config, status, busy, hydrating);
   const configText = draft ?? (config ? JSON.stringify(config, null, 2) : '');
